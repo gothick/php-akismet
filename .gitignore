@@ -33,3 +33,7 @@ Temporary Items
 
 ## Composer ignores
 /vendor
+
+## Eclipse ignores
+.settings/
+.buildpath
