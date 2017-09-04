@@ -16,5 +16,10 @@
       "guzzlehttp/guzzle": "^6.0"
    },
    "require-dev": {
-   }
+   },
+   "autoload": {
+     "psr-4": {
+       "Gothick\\AkismetClient\\": "src/"
+    }
+  }
 }
