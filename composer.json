@@ -1,0 +1,20 @@
+{
+   "name": "gothick/php-akismet",
+   "description": "Akismet Client Library",
+   "homepage": "https://github.com/gothick/phpbb-akismet",
+   "version": "0.0.1",
+   "time": "2017-09-04",
+   "license": "Apache-2.0",
+   "authors": [{
+      "name": "Matt Gibson",
+      "email": "matt@mattgibsoncreative.co.uk",
+      "homepage": "http://mattgibsoncreative.co.uk",
+      "role": "Lead Developer"
+   }],
+   "require": {
+      "php": ">=5.6",
+      "guzzlehttp/guzzle": "^6.0"
+   },
+   "require-dev": {
+   }
+}
