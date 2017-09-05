@@ -24,14 +24,18 @@ class Client
     
     const VERSION = '0.1';
 
+    
     /**
-     * Create an Akismet client.
-     *
-     * @param string $api_key
+     * @param unknown $guzzle_client
+     * @param unknown $app_url
+     * @param unknown $app_name
+     * @param unknown $app_version
+     * @param unknown $api_key
+     * @throws Exception
      */
-    public function __construct($app_url, $app_name, $app_version, $api_key = null)
+    public function __construct($app_url, $app_name, $app_version, $api_key = null, $guzzle_client = null)
     {
-        if (empty($app_url) || empty($app_name) || empty($app_version)) {
+        if ((empty($app_url)) || (empty($app_name)) || (empty($app_version))) {
             throw new Exception('Must supply app URL, name and version in ' . __METHOD__);
         }
         // The Akismet API calls it a blog, so keep consistent.
@@ -40,16 +44,24 @@ class Client
         $this->app_name = $app_name;
         $this->app_version = $app_version;
         $this->api_key = $api_key;
-        // Well, there'd be no point in creating an instance of us unless we were going
-        // to do some work, so we might as well warm up the Guzzle client here.
         
-        // Add a bit of middleware to set our User-Agent header every time without
-        // us having to worry about it in every method.
-        $stack = new HandlerStack();
-        $stack->setHandler(new CurlHandler());
-        // TODO: Make sure this is working.
-        $stack->push($this->add_header('User-Agent', $this->getOurUserAgent()));
-        $this->guzzle_client = new \GuzzleHttp\Client();
+        // Our client is passed in as dependency injection is helpful for 
+        // testing, but in the normal course of things we'll probably just
+        // create it ourselves.
+        $this->guzzle_client = $guzzle_client;
+        if (!isset($this->guzzle_client)) 
+        {
+            $this->guzzle_client = new \GuzzleHttp\Client();
+        }
+    }
+    
+    private function getStandardHeaders()
+    {
+        // I'd use Guzzle middleware for this, as we want to add it on 
+        // every request, but how do I do that and support dependency 
+        // injection of our client? You can't add middleware to a 
+        // Guzzle client after it's been constructed, right?
+        return array('User-Agent' => $this->getOurUserAgent());
     }
 
     private function getOurUserAgent()
@@ -59,7 +71,7 @@ class Client
         // e.g. WordPress/4.4.1 | Akismet/3.1.7
         // TODO: Check this is formatting correctly.
         // TODO: Add unit test
-        return "{$this->app_name}/{$this->app_version} | Gothick\\AkismetClient/{self::VERSION}";
+        return "{$this->app_name}/{$this->app_version} | Gothick\\AkismetClient/" . self::VERSION;
     }
 
     public function verifyKey($api_key = null)
@@ -72,7 +84,8 @@ class Client
             'form_params' => [
                 "key" => $key_to_verify,
                 "blog" => $this->blog
-            ]
+            ],
+            'headers' => $this->getStandardHeaders()
         ]);
         
         if ($response->getStatusCode() == 200) {
@@ -122,7 +135,8 @@ class Client
         ]);
         $params = array_merge($server_params, $params);
         $response = $this->guzzle_client->request('POST', $this->apiUri('comment-check'), [
-            'form_params' => $params
+            'form_params' => $params,
+            'headers' => $this->getStandardHeaders()
         ]);
 
         $result = null;
@@ -152,18 +166,5 @@ class Client
             }
             return "https://{$this->api_key}.rest.akismet.com/1.1/$method";
         }
-    }
-    
-    function add_header($header, $value)
-    {
-        return function (callable $handler) use ($header, $value) {
-            return function (
-                \Psr\Http\Message\RequestInterface $request,
-                array $options
-                ) use ($handler, $header, $value) {
-                    $request = $request->withHeader($header, $value);
-                    return $handler($request, $options);
-            };
-        };
     }
 }
