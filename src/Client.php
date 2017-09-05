@@ -24,15 +24,18 @@ class Client
     
     const VERSION = '0.1';
 
-    
-    /**
-     * @param unknown $guzzle_client
-     * @param unknown $app_url
-     * @param unknown $app_name
-     * @param unknown $app_version
-     * @param unknown $api_key
-     * @throws Exception
-     */
+	/**
+	 * Make an Akismet API client. Typically you'd provide an API key in $api_key, at which point you can
+	 * make any call. Without the optional $api_key you're limited to calling verifyApiKey. Once you've
+	 * verified a key you can call setApiKey() later and start using the rest of the API.
+	 * 
+	 * @param string $app_url e.g. http://forum.example.com/
+	 * @param string $app_name e.g. phpBB
+	 * @param string $app_version e.g. 3.2.1
+	 * @param string $api_key (optional) Akismet API key
+	 * @param \GuzzleHttp\Client (optional) $guzzle_client. You can inject a mock, or a non-Curl using Guzzle client here, say. Otherwise we'll just make one.
+	 * @throws Exception
+	 */
     public function __construct($app_url, $app_name, $app_version, $api_key = null, $guzzle_client = null)
     {
         if ((empty($app_url)) || (empty($app_name)) || (empty($app_version))) {
@@ -45,7 +48,7 @@ class Client
         $this->app_version = $app_version;
         $this->api_key = $api_key;
         
-        // Our client is passed in as dependency injection is helpful for 
+        // Our client is passed in, as dependency injection is helpful for 
         // testing, but in the normal course of things we'll probably just
         // create it ourselves.
         $this->guzzle_client = $guzzle_client;
@@ -73,8 +76,17 @@ class Client
         // TODO: Add unit test
         return "{$this->app_name}/{$this->app_version} | Gothick\\AkismetClient/" . self::VERSION;
     }
+    
+    public function setApiKey($api_key)
+    {
+    		if (empty($api_key))
+    		{
+    			throw new Exception('Must provide an API key in ' . __METHOD__);
+    		}
+    		$this->api_key = $api_key;
+    }
 
-    public function verifyKey($api_key = null)
+    public function verifyApiKey($api_key = null)
     {
         $verified = false;
         $error = '';
@@ -149,11 +161,10 @@ class Client
             }
             throw new Exception('Unexpected status code in ' . __METHOD__ . ': ' . $error);
         }
-        if ($result) {
-            return $result;
-        } else {
-            throw new Exception('Unexpected error in ' . __METHOD__);
+        if (!$result) {
+        		throw new Exception('Unexpected error in ' . __METHOD__);
         }
+        return $result;
     }
 
     private function apiUri($method)

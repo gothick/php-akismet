@@ -49,7 +49,7 @@ $guzzle_client = new \GuzzleHttp\Client([
 $akismet_client = new \Gothick\AkismetClient\Client('http://gothick.org.uk',
 		'Test App', 'v1.4', '359ee33b40e0', $guzzle_client);
 
-$result = $akismet_client->verifyKey();
+$result = $akismet_client->verifyApiKey();
 var_dump($result);
 
 $result = $akismet_client->commentCheck('81.174.144.111',
