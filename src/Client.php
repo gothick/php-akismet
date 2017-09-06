@@ -1,9 +1,7 @@
 <?php
 namespace Gothick\AkismetClient;
-
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\CurlHandler;
-
 class Client
 {
 
@@ -120,28 +118,34 @@ class Client
         		throw new Exception('Must provide or pre-configure a key in ' . __METHOD__);
         }
         
-        $response = $this->guzzle_client->request('POST', $this->apiUri('verify-key'), [
-            'form_params' => [
-                "key" => $key_to_verify,
-                "blog" => $this->blog
-            ],
-            'headers' => $this->getStandardHeaders()
-        ]);
-        
-        if ($response->getStatusCode() == 200) {
-            $result = (string) $response->getBody();
-            if ($result == 'valid') {
-                $verified = true;
-            } else {
-                // Invalid key, but a reasonable resonse from the server.
-            }
-        } else {
-            $error = (string) $response->getStatusCode();
-            if ($response->hasHeader('X-akismet-debug-help')) {
-                $error .= ': ' . $response->getHeader('X-akismet-debug-help');
-            }
-            throw new Exception('Unexpected response verifying key: ' . $error . ' in ' . __METHOD__);
-        }
+        try
+		{	        $response = $this->guzzle_client->request('POST', $this->apiUri('verify-key'), [
+	            'form_params' => [
+	                "key" => $key_to_verify,
+	                "blog" => $this->blog
+	            ],
+	            'headers' => $this->getStandardHeaders()
+	        ]);
+	        
+	        if ($response->getStatusCode() == 200) {
+	            $result = (string) $response->getBody();
+	            if ($result == 'valid') {
+	                $verified = true;
+	            } else {
+	                // Invalid key, but a reasonable resonse from the server.
+	            }
+	        } else {
+	            $error = (string) $response->getStatusCode();
+	            if ($response->hasHeader('X-akismet-debug-help')) {
+	                $error .= ': ' . $response->getHeader('X-akismet-debug-help');
+	            }
+	            throw new Exception('Unexpected response verifying key: ' . $error . ' in ' . __METHOD__);
+	        }
+		}
+		catch(\Exception $e)
+		{
+			throw new Exception('Unexpected exception in ' . __METHOD__, 0, $e);
+		}
         return $verified;
     }
 
