@@ -64,7 +64,9 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 	public function testThrowsExceptionOnUnexpectedResult()
 	{
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyInvalidResponse());
-		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
+		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyUnexpected500Response());
+		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'ABCDEF', $guzzle_client);
+		$this->assertFalse($client->verifyKey());
 	}
 }
