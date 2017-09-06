@@ -195,10 +195,9 @@ class Client
 	 * ClientResult
 	 * object or throws an exception.
 	 *
-	 * @param string $user_ip
-	 * @param string $user_agent
-	 * @param array $other_params
-	 *        	See the Akismet API documentation for details
+	 * @param array $params
+	 *        User IP, User-Agent, the message, etc. See the Akismet API documentation
+	 *        for details.
 	 * @param array $server_params
 	 *        	This can just be $_SERVER, if you have access to it
 	 * @param string $user_role
@@ -206,21 +205,21 @@ class Client
 	 * @param boolean $is_test
 	 *        	Set to true for automated testing
 	 */
-	public function commentCheck ($user_ip, $user_agent, $other_params = array(),
-			$server_params = array(), $user_role = 'user', $is_test = false)
+	public function commentCheck ($params = array(), $server_params = array(), $user_role = 'user', $is_test = false)
 	{
-		if (empty($user_ip) || empty($user_agent))
+		// According to the Akismet docs, these two (and 'blog', which we have as $this->blog already) are
+		// the only required parameters. Seems odd, but hey.
+		if (
+				empty($params['user_ip']) || 
+				empty($params['user_agent'])
+		)
 		{
-			throw new Exception(
-					'Must provide user IP and user agent to ' . __METHOD__);
+			throw new \InvalidArgumentException(__METHOD__ . ' requires user_ip and user_agent in $params');
 		}
-		$params = array_merge($other_params,
-				[
-						'user_ip' => $user_ip,
-						'user_agent' => $user_agent,
-						'blog' => $this->blog
-				]);
+
 		$params = array_merge($server_params, $params);
+		$params = array_merge($params, ['blog' => $this->blog]);
+
 		$response = $this->guzzle_client->request('POST',
 				$this->apiUri('comment-check'),
 				[
