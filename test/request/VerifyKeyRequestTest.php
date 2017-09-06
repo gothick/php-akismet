@@ -69,4 +69,22 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'ABCDEF', $guzzle_client);
 		$this->assertFalse($client->verifyKey());
 	}
+
+	public function testVerifyKeyCallIsUnauthenticated()
+	{
+		$history_container = [];
+
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyValidResponse(), $history_container);
+		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'ABCDEF123', $guzzle_client);
+
+		$client->verifyKey();
+
+		$transaction = $history_container[0];
+		$request = $transaction['request'];
+		$this->assertTrue($request->hasHeader('Host'));
+		$this->assertCount(1, $request->getHeader('Host'));
+		$host = $request->getHeader('Host');
+
+		$this->assertEquals($host[0], 'rest.akismet.com');
+	}
 }
