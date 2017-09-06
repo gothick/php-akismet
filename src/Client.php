@@ -9,26 +9,49 @@ class Client
 
     /**
      * Akismet API key
-     * 
+     *
      * @var string
      */
     private $api_key;
 
+    /**
+     * Our Guzzle client. This can be passed in for DI, or if not we'll create a default one ouselves.
+     *
+     * @var unknown
+     */
     private $guzzle_client;
 
+    /**
+     * URL of the site using us. Akismet calls this "blog", because WordPress.
+     * @var string
+     */
     private $blog;
 
+    /**
+     * Name of the site using us.
+     * @var string
+     */
     private $app_name;
 
+    /**
+     * Version string of the site using us.
+     * @var string
+     */
     private $app_version;
     
+    /**
+     * Version of this Client. Akismet likes to know. We should bump this every time
+     * we package a new version.
+     *
+     * @var string
+     */
     const VERSION = '0.1';
 
 	/**
 	 * Make an Akismet API client. Typically you'd provide an API key in $api_key, at which point you can
 	 * make any call. Without the optional $api_key you're limited to calling verifyApiKey. Once you've
 	 * verified a key you can call setApiKey() later and start using the rest of the API.
-	 * 
+	 *
 	 * @param string $app_url e.g. http://forum.example.com/
 	 * @param string $app_name e.g. phpBB
 	 * @param string $app_version e.g. 3.2.1
