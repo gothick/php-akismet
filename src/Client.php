@@ -181,7 +181,9 @@ class Client
 			}
 		} catch (\Exception $e)
 		{
-			throw new Exception('Unexpected exception in ' . __METHOD__, $e);
+			// Wrap whatever exception we caught up in a new exception of our 
+			// own type and throw it along up the line.
+			throw new Exception('Unexpected exception in ' . __METHOD__, 0, $e);
 		}
 		return $verified;
 	}
