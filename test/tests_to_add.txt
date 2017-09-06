@@ -18,3 +18,5 @@
 * Test we correctly fail to do anything other than verifyKey if we've not given the client a key.
 * Test commentCheck uses correct URL.
 * Make sure requests are x-www-form-urlencoded
+* Check scheme/protocol (http/https)
+
