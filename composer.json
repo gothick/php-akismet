@@ -24,5 +24,10 @@
 		"psr-4": {
 			"Gothick\\AkismetClient\\": "src/"
 		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Gothick\\AkismetClient\\Test\\": "test/"
+		}
 	}
 }

@@ -109,11 +109,16 @@ class Client
     		$this->api_key = $api_key;
     }
 
-    public function verifyApiKey($api_key = null)
+    public function verifyKey($api_key = null)
     {
         $verified = false;
         $error = '';
         $key_to_verify = empty($api_key) ? $this->api_key : $api_key;
+        
+        if (empty($key_to_verify))
+        {
+        		throw new Exception('Must provide or pre-configure a key in ' . __METHOD__);
+        }
         
         $response = $this->guzzle_client->request('POST', $this->apiUri('verify-key'), [
             'form_params' => [
@@ -128,18 +133,16 @@ class Client
             if ($result == 'valid') {
                 $verified = true;
             } else {
-                $error = "200 Response: $result";
+                // Invalid key, but a reasonable resonse from the server.
             }
         } else {
             $error = (string) $response->getStatusCode();
             if ($response->hasHeader('X-akismet-debug-help')) {
                 $error .= ': ' . $response->getHeader('X-akismet-debug-help');
             }
+            throw new Exception('Unexpected response verifying key: ' . $error . ' in ' . __METHOD__);
         }
-        if (! $verified) {
-            throw new \Exception(__METHOD__ . ': ' . $error);
-        }
-        return true;
+        return $verified;
     }
 
     /**
