@@ -12,10 +12,8 @@ php:
   - 7.0
   # aliased to a recent 7.1 version
   - 7.1
-  # aliased to a recent hhvm version
-  - hhvm
-    env:
-      - HHVMPHP7="yes"
+#  # aliased to a recent hhvm version
+#  - hhvm
 
 # optionally specify a list of environments, for example to test different RDBMS
 #env:
