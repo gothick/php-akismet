@@ -62,7 +62,7 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 		$this->assertEquals($test_blog_url, $request_vars['blog'], 'Client did not send correct blog');
 	}
 
-	public function testThrowsExceptionOnUnexpectedResult()
+	public function testVerifyKeyThrowsExceptionOnUnexpectedResult()
 	{
 		$this->expectException(\Gothick\AkismetClient\Exception::class);
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyUnexpected500Response());
