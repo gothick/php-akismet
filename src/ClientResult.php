@@ -44,7 +44,6 @@ abstract class ClientResult
 
 		if ($status_code != 200 || !in_array($this->raw_result, $valid_values))
 		{
-			// Our clients are meant to check first
 			$message = 'Invalid ' . $status_code . ' response :' . $this->raw_result . ' in ' . __METHOD__;
 			if ($this->hasDebugHelp())
 			{
