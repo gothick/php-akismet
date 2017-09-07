@@ -12,6 +12,6 @@ class CommentCheckResult extends ClientResult
 		return $this->raw_result == 'true';
 	}
 	public function isBlatantSpam() {
-		return ($this->isSpam() && $this->pro_tip == 'disacrd');
+		return ($this->isSpam() && $this->hasProTip() && $this->getProTip() == 'discard');
 	}
 }
