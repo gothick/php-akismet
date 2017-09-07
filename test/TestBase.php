@@ -71,7 +71,7 @@ abstract class TestBase extends TestCase
 				'invalid'
 				);
 	}
-	protected static function commentCheckHamRepsonse()
+	protected static function commentCheckHamResponse()
 	{
 		return new Response(
 				200,
