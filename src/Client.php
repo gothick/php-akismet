@@ -127,12 +127,12 @@ class Client
 	public function verifyKey($api_key = null)
 	{
 		$key_to_verify = empty($api_key) ? $this->api_key : $api_key;
-		
+
 		if (empty($key_to_verify))
 		{
 			throw new Exception('Must provide or pre-configure a key in ' . __METHOD__);
 		}
-		
+
 		try
 		{
 			$response = $this->guzzle_client->request('POST', $this->apiUri('verify-key'),
@@ -143,30 +143,14 @@ class Client
 							],
 							'headers' => $this->getStandardHeaders()
 					]);
-			$status_code = $response->getStatusCode();
-			$body = (string) $response->getBody();
 
-			if ($status_code == 200 && ($body == 'valid' || $body == 'invalid'))
-			{
-				// TODO: do we need to return debugging help anyway? I think
-				// Akismet sometimes sends hints back even with a valid response.
-				$verified = ($body == 'valid');
-			} else
-			{
-				$error = $status_code;
-				if ($response->hasHeader('X-akismet-debug-help'))
-				{
-					$error .= ': ' . $response->getHeader('X-akismet-debug-help');
-				}
-				throw new Exception('Unexpected response verifying key: ' . $error . ' in ' . __METHOD__);
-			}
 		} catch (\Exception $e)
 		{
 			// Wrap whatever exception we caught up in a new exception of our 
 			// own type and throw it along up the line.
 			throw new Exception('Unexpected exception in ' . __METHOD__, 0, $e);
 		}
-		return $verified;
+		return new VerifyKeyResult($response);
 	}
 
 	/**
@@ -199,12 +183,17 @@ class Client
 				'user_role' => $user_role
 		]);
 
-		$response = $this->guzzle_client->request('POST', $this->apiUri('comment-check'),
-				[
-						'form_params' => $params,
-						'headers' => $this->getStandardHeaders()
-				]);
-
+		try
+		{
+			$response = $this->guzzle_client->request('POST', $this->apiUri('comment-check'),
+					[
+							'form_params' => $params,
+							'headers' => $this->getStandardHeaders()
+					]);
+		} catch(\Exception $e)
+		{
+			throw new Exception('Unexpected exception in ' . __METHOD__, 0, $e);
+		}
 		return new CommentCheckResult($response);
 	}
 

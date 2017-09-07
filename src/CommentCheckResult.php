@@ -5,11 +5,7 @@ class CommentCheckResult extends ClientResult
 {
 	public function __construct(\GuzzleHttp\Psr7\Response $response)
 	{
-		parent::__construct($response);
-		if ($this->raw_result !== 'true' && $this->raw_result !== 'false')
-		{
-			throw new Exception('Unexpected response in ' . __METHOD__ . ': ' . $this->raw_result);
-		}
+		parent::__construct($response, ['true', 'false']);
 	}
 
 	public function isSpam() {

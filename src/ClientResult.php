@@ -21,7 +21,14 @@ abstract class ClientResult
 	 */
 	protected $debug_help;
 
-	public function __construct(\GuzzleHttp\Psr7\Response $response)
+	/**
+	 * Make a result, throwing exceptions on invalid responses and non-200 http status codes.
+	 * 
+	 * @param \GuzzleHttp\Psr7\Response $response
+	 * @param array $valid_values
+	 * @throws Exception
+	 */
+	public function __construct(\GuzzleHttp\Psr7\Response $response, $valid_values)
 	{
 		if ($response->hasHeader('X-akismet-debug-help'))
 		{
@@ -32,17 +39,19 @@ abstract class ClientResult
 			$this->pro_tip = $response->getHeaderLine(self::PRO_TIP_HEADER);
 		}
 
-		if ($response->getStatusCode() != 200)
+		$status_code = $response->getStatusCode();
+		$this->raw_result = (string) $response->getBody();
+
+		if ($status_code != 200 || !in_array($this->raw_result, $valid_values))
 		{
 			// Our clients are meant to check first
-			$message = 'Response with invalid status code ' . $response->getStatusCode() . ' in ' . __METHOD__;
+			$message = 'Invalid ' . $status_code . ' response :' . $this->raw_result . ' in ' . __METHOD__;
 			if ($this->hasDebugHelp())
 			{
 				$message .= ' (debug help: ' . $this->getDebugHelp() . ')';
 			}
 			throw new Exception($message);
 		}
-		$this->raw_result = (string) $response->getBody();
 	}
 
 	public function hasProTip()

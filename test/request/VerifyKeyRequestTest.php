@@ -2,6 +2,8 @@
 
 namespace Gothick\AkismetClient\Test\Request;
 
+use Gothick\AkismetClient\VerifyKeyResult;
+
 final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 {
 	public function testCanVerifyConfiguredKey()
@@ -14,7 +16,9 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyValidResponse(), $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
 
-		$this->assertTrue($client->verifyKey(), 'Incorrect result verifying key');
+		$result = $client->verifyKey();
+		$this->assertInstanceOf(VerifyKeyResult::class, $result);
+		$this->assertTrue($result->isValid());
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
@@ -34,7 +38,9 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyValidResponse(), $history_container);
 		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', $preconfigured_test_key, $guzzle_client);
 
-		$this->assertTrue($client->verifyKey($arbitrary_test_key), 'Incorrect result verifying key');
+		$result = $client->verifyKey($arbitrary_test_key);
+		$this->assertInstanceOf(VerifyKeyResult::class, $result);
+		$this->assertTrue($result->isValid());
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
@@ -53,7 +59,9 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyInvalidResponse(), $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
 
-		$this->assertFalse($client->verifyKey(), 'Incorrect result verifying key');
+		$result = $client->verifyKey();
+		$this->assertInstanceOf(VerifyKeyResult::class, $result);
+		$this->assertFalse($result->isValid());
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
