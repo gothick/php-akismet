@@ -147,7 +147,7 @@ class Client
 					]);
 			$status_code = $response->getStatusCode();
 			$body = (string) $response->getBody();
-			
+
 			if ($status_code == 200 && ($body == 'valid' || $body == 'invalid'))
 			{
 				// TODO: do we need to return debugging help anyway? I think
@@ -206,25 +206,8 @@ class Client
 						'form_params' => $params,
 						'headers' => $this->getStandardHeaders()
 				]);
-		
-		$result = null;
-		if ($response->getStatusCode() == 200)
-		{
-			$result = new CommentCheckResult($response);
-		} else
-		{
-			$error = (string) $response->getStatusCode();
-			if ($response->hasHeader('X-akismet-debug-help'))
-			{
-				$error .= ': ' . $response->getHeader('X-akismet-debug-help');
-			}
-			throw new Exception('Unexpected status code in ' . __METHOD__ . ': ' . $error);
-		}
-		if (!$result)
-		{
-			throw new Exception('Unexpected error in ' . __METHOD__);
-		}
-		return $result;
+
+		return new CommentCheckResult($response);
 	}
 
 	private function apiUri($method)

@@ -1,44 +1,63 @@
 <?php
 namespace Gothick\AkismetClient;
 
-class ClientResult
+abstract class ClientResult
 {
 
 	const PRO_TIP_HEADER = 'X-akismet-pro-tip';
 
 	/**
-	 * Raw string we got back from the Akismet API as an answer
-	 * @var string
+	 * @var string Raw string we got back from the Akismet API as an answer
 	 */
-	protected $raw_result;
+	protected $raw_result = '';
 
 	/**
-	 * Akismet's X-akismet-pro-tip header, which sometimes has
-	 * useful extra information.
-	 * @var unknown
+	 * @var string Akismet's X-akismet-pro-tip header, which sometimes has useful extra information.
 	 */
-	protected $pro_tip;
+	protected $pro_tip = '';
+
+	/**
+	 * @var string If there was an X-akismet-debug-header, this is what it contained.
+	 */
+	protected $debug_help;
 
 	public function __construct(\GuzzleHttp\Psr7\Response $response)
 	{
-		if ($response->getStatusCode() != 200)
+		if ($response->hasHeader('X-akismet-debug-help'))
 		{
-			// Our clients are meant to check first
-			throw new Exception(
-					'Response with invalid status code in ' . __METHOD__);
+			$this->debug_help = $response->getHeader('X-akismet-debug-help');
 		}
-		$this->raw_result = (string) $response->getBody();
 		if ($response->hasHeader(self::PRO_TIP_HEADER))
 		{
 			$this->pro_tip = $response->getHeader(self::PRO_TIP_HEADER);
 		}
+
+		if ($response->getStatusCode() != 200)
+		{
+			// Our clients are meant to check first
+			$message = 'Response with invalid status code in ' . __METHOD__;
+			if ($this->hasDebugHelp())
+			{
+				$message .= ' (debug help: ' . $this->getDebugHelp() . ')';
+			}
+			throw new Exception($message);
+		}
+		$this->raw_result = (string) $response->getBody();
 	}
 
 	public function hasProTip()
 	{
-		return (!empty($this->pro_tip));
+		return !empty($this->pro_tip);
 	}
 	public function getProTip()
+	{
+		return $this->pro_tip;
+	}
+	public function hasDebugHelp()
+	{
+		return !empty($this->debug_help);
+	}
+	public function getDebugHelp()
 	{
 		return $this->pro_tip;
 	}
