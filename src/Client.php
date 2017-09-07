@@ -226,7 +226,7 @@ class Client
 		$result = null;
 		if ($response->getStatusCode() == 200)
 		{
-			$result = new ClientResult($response);
+			$result = new CommentCheckResult($response);
 		}
 		else
 		{
