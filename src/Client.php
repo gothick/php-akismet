@@ -154,30 +154,26 @@ class Client
 							],
 							'headers' => $this->getStandardHeaders()
 					]);
+            $status_code = $response->getStatusCode();
+            $body = (string) $response->getBody();
 
-			if ($response->getStatusCode() == 200)
+			if ($status_code == 200 && ($body == 'valid' || $body == 'invalid'))
 			{
-				$result = (string) $response->getBody();
-				if ($result == 'valid')
-				{
-					$verified = true;
-				}
-				else
-				{
-					// Invalid key, but a reasonable resonse from the server.
-				}
+			    // TODO: do we need to return debugging help anyway? I think
+			    // Akismet sometimes sends hints back even with a valid response.
+				$verified = ($body == 'valid');
 			}
 			else
 			{
-				$error = (string) $response->getStatusCode();
-				if ($response->hasHeader('X-akismet-debug-help'))
-				{
-					$error .= ': ' . $response->getHeader(
-							'X-akismet-debug-help');
-				}
-				throw new Exception(
-						'Unexpected response verifying key: ' . $error . ' in ' .
-								 __METHOD__);
+			    $error = $status_code;
+        			if ($response->hasHeader('X-akismet-debug-help'))
+        			{
+        				$error .= ': ' . $response->getHeader(
+        						'X-akismet-debug-help');
+        			}
+        			throw new Exception(
+        					'Unexpected response verifying key: ' . $error . ' in ' .
+        							 __METHOD__);
 			}
 		} catch (\Exception $e)
 		{
