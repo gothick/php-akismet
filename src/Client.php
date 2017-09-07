@@ -25,21 +25,21 @@ class Client
 	/**
 	 * URL of the site using us.
 	 * Akismet calls this "blog", because WordPress.
-	 * 
+	 *
 	 * @var string
 	 */
 	private $blog;
 
 	/**
 	 * Name of the site using us.
-	 * 
+	 *
 	 * @var string
 	 */
 	private $app_name;
 
 	/**
 	 * Version string of the site using us.
-	 * 
+	 *
 	 * @var string
 	 */
 	private $app_version;
@@ -85,11 +85,11 @@ class Client
 		}
 		// The Akismet API calls it a blog, so keep consistent.
 		$this->blog = $app_url;
-
+		
 		$this->app_name = $app_name;
 		$this->app_version = $app_version;
 		$this->api_key = $api_key;
-
+		
 		// Our client is passed in, as dependency injection is helpful for 
 		// testing, but in the normal course of things we'll probably just
 		// create it ourselves.
@@ -136,13 +136,13 @@ class Client
 		$verified = false;
 		$error = '';
 		$key_to_verify = empty($api_key) ? $this->api_key : $api_key;
-
+		
 		if (empty($key_to_verify))
 		{
 			throw new Exception(
 					'Must provide or pre-configure a key in ' . __METHOD__);
 		}
-
+		
 		try
 		{
 			$response = $this->guzzle_client->request('POST',
@@ -154,26 +154,26 @@ class Client
 							],
 							'headers' => $this->getStandardHeaders()
 					]);
-            $status_code = $response->getStatusCode();
-            $body = (string) $response->getBody();
-
+			$status_code = $response->getStatusCode();
+			$body = (string) $response->getBody();
+			
 			if ($status_code == 200 && ($body == 'valid' || $body == 'invalid'))
 			{
-			    // TODO: do we need to return debugging help anyway? I think
-			    // Akismet sometimes sends hints back even with a valid response.
+				// TODO: do we need to return debugging help anyway? I think
+				// Akismet sometimes sends hints back even with a valid response.
 				$verified = ($body == 'valid');
 			}
 			else
 			{
-			    $error = $status_code;
-        			if ($response->hasHeader('X-akismet-debug-help'))
-        			{
-        				$error .= ': ' . $response->getHeader(
-        						'X-akismet-debug-help');
-        			}
-        			throw new Exception(
-        					'Unexpected response verifying key: ' . $error . ' in ' .
-        							 __METHOD__);
+				$error = $status_code;
+				if ($response->hasHeader('X-akismet-debug-help'))
+				{
+					$error .= ': ' . $response->getHeader(
+							'X-akismet-debug-help');
+				}
+				throw new Exception(
+						'Unexpected response verifying key: ' . $error . ' in ' .
+								 __METHOD__);
 			}
 		} catch (\Exception $e)
 		{
@@ -192,8 +192,9 @@ class Client
 	 * object or throws an exception.
 	 *
 	 * @param array $params
-	 *        User IP, User-Agent, the message, etc. See the Akismet API documentation
-	 *        for details.
+	 *        	User IP, User-Agent, the message, etc. See the Akismet API
+	 *        	documentation
+	 *        	for details.
 	 * @param array $server_params
 	 *        	This can just be $_SERVER, if you have access to it
 	 * @param string $user_role
@@ -201,28 +202,29 @@ class Client
 	 * @param boolean $is_test
 	 *        	Set to true for automated testing
 	 */
-	public function commentCheck ($params = array(), $server_params = array(), $user_role = 'user', $is_test = false)
+	public function commentCheck ($params = array(), $server_params = array(),
+			$user_role = 'user', $is_test = false)
 	{
 		// According to the Akismet docs, these two (and 'blog', which we have as $this->blog already) are
 		// the only required parameters. Seems odd, but hey.
-		if (
-				empty($params['user_ip']) || 
-				empty($params['user_agent'])
-		)
+		if (empty($params['user_ip']) || empty($params['user_agent']))
 		{
-			throw new \InvalidArgumentException(__METHOD__ . ' requires user_ip and user_agent in $params');
+			throw new \InvalidArgumentException(
+					__METHOD__ . ' requires user_ip and user_agent in $params');
 		}
-
+		
 		$params = array_merge($server_params, $params);
-		$params = array_merge($params, ['blog' => $this->blog]);
-
+		$params = array_merge($params, [
+				'blog' => $this->blog
+		]);
+		
 		$response = $this->guzzle_client->request('POST',
 				$this->apiUri('comment-check'),
 				[
 						'form_params' => $params,
 						'headers' => $this->getStandardHeaders()
 				]);
-
+		
 		$result = null;
 		if ($response->getStatusCode() == 200)
 		{
