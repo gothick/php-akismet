@@ -55,7 +55,7 @@ abstract class TestBase extends TestCase
 				'invalid'
 				);
 	}
-	protected static function verifyKeyUnexpected200Response()
+	protected static function unexpected200Response()
 	{
 		return new Response(
 				200,
@@ -69,7 +69,7 @@ abstract class TestBase extends TestCase
 				'argleflap'
 				);
 	}
-	protected static function verifyKeyUnexpected500Response()
+	protected static function serverErrorResponse()
 	{
 		return new Response(
 				500,
