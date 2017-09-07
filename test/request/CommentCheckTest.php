@@ -125,7 +125,42 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 
 	public function testSpamResponse()
 	{
-		$this->markTestIncomplete();
+		$test_blog_url = 'http://example.com';
+
+		$test_key = 'PRECONFABCDEF12345';
+
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckSpamResponse());
+		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
+
+		$params = [
+				'user_ip' => '123.234.123.254',
+				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
+		];
+
+		$result = $client->commentCheck($params, []);
+		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result, 'Unexpected class returned from commentCheck');
+		$this->assertTrue($result->isSpam());
+		$this->assertFalse($result->isBlatantSpam());
+	}
+
+	public function testBlatantSpamResponse()
+	{
+		$test_blog_url = 'http://example.com';
+
+		$test_key = 'PRECONFABCDEF12345';
+
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckBlatantSpamResponse());
+		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
+
+		$params = [
+				'user_ip' => '123.234.123.254',
+				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
+		];
+
+		$result = $client->commentCheck($params, []);
+		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result, 'Unexpected class returned from commentCheck');
+		$this->assertTrue($result->isSpam());
+		$this->assertTrue($result->isBlatantSpam());
 	}
 
 	public function testHamResponse()
