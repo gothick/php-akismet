@@ -17,7 +17,7 @@ class Client
 	 * Our Guzzle client.
 	 * This can be passed in for DI, or if not we'll create a default one ouselves.
 	 *
-	 * @var unknown
+	 * @var \GuzzleHttp\Client
 	 */
 	private $guzzle_client;
 
@@ -126,8 +126,6 @@ class Client
 
 	public function verifyKey($api_key = null)
 	{
-		$verified = false;
-		$error = '';
 		$key_to_verify = empty($api_key) ? $this->api_key : $api_key;
 		
 		if (empty($key_to_verify))
@@ -184,10 +182,9 @@ class Client
 	 *        	This can just be $_SERVER, if you have access to it
 	 * @param string $user_role
 	 *        	If 'administrator', will always pass the check
-	 * @param boolean $is_test
-	 *        	Set to true for automated testing
+	.*
 	 */
-	public function commentCheck($params = array(), $server_params = array(), $user_role = 'user', $is_test = false)
+	public function commentCheck($params = array(), $server_params = array(), $user_role = 'guest')
 	{
 		// According to the Akismet docs, these two (and 'blog', which we have as $this->blog already) are
 		// the only required parameters. Seems odd, but hey.
@@ -195,12 +192,13 @@ class Client
 		{
 			throw new \InvalidArgumentException(__METHOD__ . ' requires user_ip and user_agent in $params');
 		}
-		
+
 		$params = array_merge($server_params, $params);
 		$params = array_merge($params, [
-				'blog' => $this->blog
+				'blog' => $this->blog,
+				'user_role' => $user_role
 		]);
-		
+
 		$response = $this->guzzle_client->request('POST', $this->apiUri('comment-check'),
 				[
 						'form_params' => $params,
