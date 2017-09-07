@@ -71,7 +71,7 @@ class Client
 	 *        	client here, say. Otherwise we'll just make one.
 	 * @throws Exception
 	 */
-	public function __construct ($app_url, $app_name, $app_version, $api_key = null, $guzzle_client = null)
+	public function __construct($app_url, $app_name, $app_version, $api_key = null, $guzzle_client = null)
 	{
 		if ((empty($app_url)) || (empty($app_name)) || (empty($app_version)))
 		{
@@ -88,13 +88,13 @@ class Client
 		// testing, but in the normal course of things we'll probably just
 		// create it ourselves.
 		$this->guzzle_client = $guzzle_client;
-		if (! isset($this->guzzle_client))
+		if (!isset($this->guzzle_client))
 		{
 			$this->guzzle_client = new \GuzzleHttp\Client();
 		}
 	}
 
-	private function getStandardHeaders ()
+	private function getStandardHeaders()
 	{
 		// I'd use Guzzle middleware for this, as we want to add it on 
 		// every request, but how do I do that and support dependency 
@@ -105,7 +105,7 @@ class Client
 		);
 	}
 
-	private function getOurUserAgent ()
+	private function getOurUserAgent()
 	{
 		// From the docs:
 		// Setting your user agent If possible, your user agent string should always use the following format: Application Name/Version | Plugin Name/Version
@@ -115,7 +115,7 @@ class Client
 		return "{$this->app_name}/{$this->app_version} | Gothick\\AkismetClient/" . self::VERSION;
 	}
 
-	public function setApiKey ($api_key)
+	public function setApiKey($api_key)
 	{
 		if (empty($api_key))
 		{
@@ -124,7 +124,7 @@ class Client
 		$this->api_key = $api_key;
 	}
 
-	public function verifyKey ($api_key = null)
+	public function verifyKey($api_key = null)
 	{
 		$verified = false;
 		$error = '';
@@ -153,8 +153,7 @@ class Client
 				// TODO: do we need to return debugging help anyway? I think
 				// Akismet sometimes sends hints back even with a valid response.
 				$verified = ($body == 'valid');
-			}
-			else
+			} else
 			{
 				$error = $status_code;
 				if ($response->hasHeader('X-akismet-debug-help'))
@@ -188,11 +187,11 @@ class Client
 	 * @param boolean $is_test
 	 *        	Set to true for automated testing
 	 */
-	public function commentCheck ($params = array(), $server_params = array(), $user_role = 'user', $is_test = false)
+	public function commentCheck($params = array(), $server_params = array(), $user_role = 'user', $is_test = false)
 	{
 		// According to the Akismet docs, these two (and 'blog', which we have as $this->blog already) are
 		// the only required parameters. Seems odd, but hey.
-		if (empty($params['user_ip']) || empty($params['user_agent']))
+		if (empty($params[ 'user_ip' ]) || empty($params[ 'user_agent' ]))
 		{
 			throw new \InvalidArgumentException(__METHOD__ . ' requires user_ip and user_agent in $params');
 		}
@@ -212,8 +211,7 @@ class Client
 		if ($response->getStatusCode() == 200)
 		{
 			$result = new CommentCheckResult($response);
-		}
-		else
+		} else
 		{
 			$error = (string) $response->getStatusCode();
 			if ($response->hasHeader('X-akismet-debug-help'))
@@ -222,20 +220,19 @@ class Client
 			}
 			throw new Exception('Unexpected status code in ' . __METHOD__ . ': ' . $error);
 		}
-		if (! $result)
+		if (!$result)
 		{
 			throw new Exception('Unexpected error in ' . __METHOD__);
 		}
 		return $result;
 	}
 
-	private function apiUri ($method)
+	private function apiUri($method)
 	{
 		if ($method == 'verify-key')
 		{
 			return "https://rest.akismet.com/1.1/verify-key";
-		}
-		else
+		} else
 		{
 			if (empty($this->api_key))
 			{

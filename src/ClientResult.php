@@ -19,7 +19,7 @@ class ClientResult
 	 */
 	protected $pro_tip;
 
-	public function __construct (\GuzzleHttp\Psr7\Response $response)
+	public function __construct(\GuzzleHttp\Psr7\Response $response)
 	{
 		if ($response->getStatusCode() != 200)
 		{
