@@ -1,0 +1,6 @@
+# .scrutinizer.yml
+build:
+  environment:
+    php:
+      version: 7.1
+
