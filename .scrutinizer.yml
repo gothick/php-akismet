@@ -1,8 +1,8 @@
 # .scrutinizer.yml
 build:
-  environment:
-    php:
-      version: 7.1
+    environment:
+        php:
+            version: 7.1
     tests:
         override:
             -
