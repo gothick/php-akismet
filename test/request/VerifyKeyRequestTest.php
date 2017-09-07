@@ -99,4 +99,8 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 	{
 		$this->markTestIncomplete();
 	}
+	public function testRestUrl()
+	{
+		$this->markTestIncomplete();
+	}
 }

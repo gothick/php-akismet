@@ -128,8 +128,21 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 	{
 		$this->markTestIncomplete();
 	}
-	public function testRestVerb();
+	public function testRestVerb()
+	{
+		$this->markTestIncomplete();
+	}
+	public function testRestUrl()
+	{
+		$this->markTestIncomplete();
+	}
+	public function testUserRolePassed()
+	{
+		$this->markTestIncomplete();
+	}
+	public function testIsTestPassed()
 	{
 		$this->markTestIncomplete();
 	}
 }
+
