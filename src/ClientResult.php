@@ -25,11 +25,11 @@ abstract class ClientResult
 	{
 		if ($response->hasHeader('X-akismet-debug-help'))
 		{
-			$this->debug_help = $response->getHeader('X-akismet-debug-help');
+			$this->debug_help = $response->getHeaderLine('X-akismet-debug-help');
 		}
 		if ($response->hasHeader(self::PRO_TIP_HEADER))
 		{
-			$this->pro_tip = $response->getHeader(self::PRO_TIP_HEADER);
+			$this->pro_tip = $response->getHeaderLine(self::PRO_TIP_HEADER);
 		}
 
 		if ($response->getStatusCode() != 200)

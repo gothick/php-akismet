@@ -111,6 +111,18 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 		$client->commentCheck($params);
 	}
 
+	public function testDebugHelpMessage()
+	{
+		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckBadParametersResponse());
+		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'TESTKEY', $guzzle_client);
+		$params = [
+				'user_ip' => '123.234.123.254',
+				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
+		];
+		$client->commentCheck($params);
+	}
+
 	public function testSpamResponse()
 	{
 		$this->markTestIncomplete();

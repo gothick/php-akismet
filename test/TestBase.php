@@ -56,6 +56,21 @@ abstract class TestBase extends TestCase
 				);
 	}
 
+	protected static function verifyKeyInvalidResponseWithDebugHelp()
+	{
+		return new Response(
+				200,
+				[
+						'Connection' => 'keep-alive',
+						'Content-Length' => '7',
+						'Content-Type' => 'text/plain; charset=utf-8',
+						'Date' => 'Wed, 06 Sep 2017 11:54:28 GMT',
+						'Server' => 'nginx',
+						'X-akismet-debug-help' => 'Please contact akismet.com support staff at akismet.com/contact/'
+				],
+				'invalid'
+				);
+	}
 	protected static function commentCheckHamRepsonse()
 	{
 		return new Response(
@@ -91,6 +106,22 @@ abstract class TestBase extends TestCase
 						'X-akismet-guid' => '8b3d95a751ebad069dfcee9a3057fc40'
 				],
 				'true'
+		);
+	}
+	
+	protected static function commentCheckBadParametersResponse()
+	{
+		return new Response(
+				200,
+				[
+						'Connection' => 'keep-alive',
+						'Content-Length' => '29',
+						'Content-Type' => 'text/plain; charset=utf-8',
+						'Date' => 'Thu, 07 Sep 2017 19:31:05 GMT',
+						'Server' => 'nginx',
+						'X-akismet-debug-help' => 'Empty "blog" value'
+				],
+				'Missing required field: blog.'
 		);
 	}
 

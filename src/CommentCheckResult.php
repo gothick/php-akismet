@@ -8,7 +8,7 @@ class CommentCheckResult extends ClientResult
 		parent::__construct($response);
 		if ($this->raw_result !== 'true' && $this->raw_result !== 'false')
 		{
-			throw new Exception('Unexpected response in ' . __METHOD__);
+			throw new Exception('Unexpected response in ' . __METHOD__ . ': ' . $this->raw_result);
 		}
 	}
 
