@@ -227,7 +227,7 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 		$this->assertTrue($request->hasHeader('Host'));
 		$this->assertEquals(strtolower($test_key) . '.rest.akismet.com', $request->getHeaderLine('Host'));
 	}
-	
+
 	public function testFailsWithoutApiKey()
 	{
 		$this->expectException(\Gothick\AkismetClient\Exception::class);

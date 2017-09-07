@@ -27,6 +27,18 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 		$this->assertEquals($test_blog_url, $request_vars['blog'], 'Client did not send correct blog');
 	}
 
+	public function testCantVerifyWithoutKey()
+	{
+		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$test_blog_url = 'http://example.com';
+
+		$test_key = 'PRECONFABCDEF12345!&$*$&???##'; // If that's not properly URL-encoded, we'll know about it!
+
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyValidResponse());
+		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###');
+
+		$result = $client->verifyKey();
+	}
 	public function testCanVerifyArbitraryKey()
 	{
 		$history_container = [];
