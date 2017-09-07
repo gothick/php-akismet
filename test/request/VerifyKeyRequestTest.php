@@ -72,10 +72,10 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 	
 	public function testVerifyKeyThrowsExceptionOnUnexpected200Response()
 	{
-	    $this->expectException(\Gothick\AkismetClient\Exception::class);
-	    $guzzle_client = self::getMockGuzzleClientWithResponse(self::unexpected200Response());
-	    $client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'ABCDEF', $guzzle_client);
-	    $this->assertFalse($client->verifyKey());
+		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::unexpected200Response());
+		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'ABCDEF', $guzzle_client);
+		$this->assertFalse($client->verifyKey());
 	}
 
 	public function testVerifyKeyCallIsUnauthenticated()
