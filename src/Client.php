@@ -190,7 +190,7 @@ class Client
 							'form_params' => $params,
 							'headers' => $this->getStandardHeaders()
 					]);
-		} catch(\Exception $e)
+		} catch (\Exception $e)
 		{
 			throw new Exception('Unexpected exception in ' . __METHOD__, 0, $e);
 		}

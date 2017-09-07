@@ -5,7 +5,7 @@ class CommentCheckResult extends ClientResult
 {
 	public function __construct(\GuzzleHttp\Psr7\Response $response)
 	{
-		parent::__construct($response, ['true', 'false']);
+		parent::__construct($response, [ 'true', 'false' ]);
 	}
 
 	public function isSpam() {
