@@ -37,3 +37,6 @@ Temporary Items
 ## Eclipse ignores
 .settings/
 .buildpath
+
+## Test report output, etc.
+/tmp
