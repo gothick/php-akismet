@@ -204,6 +204,30 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 		$this->assertTrue($request->hasHeader('Host'));
 		$this->assertEquals(strtolower($test_key) . '.rest.akismet.com', $request->getHeaderLine('Host'));
 	}
+	public function testUsesApiKeyWhenSetManually()
+	{
+		$history_container = [];
+		$test_blog_url = 'http://example.com';
+
+		$test_key = 'PRECONFABCDEF12345';
+
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
+		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', null, $guzzle_client);
+		$client->setApiKey($test_key);
+
+		$params = [
+				'user_ip' => '123.234.123.254',
+				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
+		];
+
+		$client->commentCheck($params, []);
+
+		$transaction = $history_container[0];
+		$request = $transaction['request'];
+		$this->assertTrue($request->hasHeader('Host'));
+		$this->assertEquals(strtolower($test_key) . '.rest.akismet.com', $request->getHeaderLine('Host'));
+	}
+	
 	public function testFailsWithoutApiKey()
 	{
 		$this->expectException(\Gothick\AkismetClient\Exception::class);
