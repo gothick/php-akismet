@@ -4,6 +4,9 @@
     <testsuite name="request-tests">
       <directory suffix="Test.php">./request</directory>
     </testsuite>
+    <testsuite name="general-tests">
+      <directory suffix="Test.php">./general</directory>
+    </testsuite>
   </testsuites>
   <filter>
     <whitelist processUncoveredFilesFromWhitelist="true">
