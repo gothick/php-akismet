@@ -21,4 +21,12 @@ final class GeneralRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$this->assertRegExp('~^@@@APPNAME@@@/###APPVERSION### \| Gothick\\\\AkismetClient/[0-9]+\.[0-9]+$~', $user_agent[0], 'User Agent in wrong format');
 	}
+	public function testFormEncoding()
+	{
+		$this->markTestIncomplete();
+	}
+	public function testProtocolIsHttps()
+	{
+		$this->markTestIncomplete();
+	}
 }

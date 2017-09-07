@@ -95,4 +95,8 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$this->assertEquals($host[0], 'rest.akismet.com');
 	}
+	public function testRestVerb()
+	{
+		$this->markTestIncomplete();
+	}
 }

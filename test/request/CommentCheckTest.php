@@ -110,4 +110,26 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 		];
 		$client->commentCheck($params);
 	}
+
+	public function testSpamResponse()
+	{
+		$this->markTestIncomplete();
+	}
+
+	public function testHamResponse()
+	{
+		$this->markTestIncomplete();
+	}
+	public function testUsesApiKey()
+	{
+		$this->markTestIncomplete();
+	}
+	public function testFailsWithoutApiKey()
+	{
+		$this->markTestIncomplete();
+	}
+	public function testRestVerb();
+	{
+		$this->markTestIncomplete();
+	}
 }
