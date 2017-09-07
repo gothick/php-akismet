@@ -5,7 +5,7 @@ abstract class ClientResult
 {
 
 	const PRO_TIP_HEADER = 'X-akismet-pro-tip';
-
+	const DEBUG_HELP_HEADER = 'X-akismet-debug-help';
 	/**
 	 * @var string Raw string we got back from the Akismet API as an answer
 	 */
@@ -30,9 +30,9 @@ abstract class ClientResult
 	 */
 	public function __construct(\GuzzleHttp\Psr7\Response $response, $valid_values)
 	{
-		if ($response->hasHeader('X-akismet-debug-help'))
+		if ($response->hasHeader(self::DEBUG_HELP_HEADER))
 		{
-			$this->debug_help = $response->getHeaderLine('X-akismet-debug-help');
+			$this->debug_help = $response->getHeaderLine(self::DEBUG_HELP_HEADER);
 		}
 		if ($response->hasHeader(self::PRO_TIP_HEADER))
 		{
@@ -68,6 +68,6 @@ abstract class ClientResult
 	}
 	public function getDebugHelp()
 	{
-		return $this->pro_tip;
+		return $this->debug_help;
 	}
 }
