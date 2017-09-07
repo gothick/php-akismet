@@ -289,9 +289,5 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 	{
 		$this->markTestIncomplete();
 	}
-	public function testIsTestPassed()
-	{
-		$this->markTestIncomplete();
-	}
 }
 
