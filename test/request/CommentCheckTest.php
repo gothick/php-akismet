@@ -245,6 +245,38 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$client->commentCheck($params, []);
 	}
+	public function testFailsWithoutUserIp()
+	{
+		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$test_blog_url = 'http://example.com';
+
+		$test_key = null;
+
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse());
+		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
+
+		$params = [
+				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
+		];
+
+		$client->commentCheck($params, []);
+	}
+	public function testFailsWithoutUserAgent()
+	{
+		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$test_blog_url = 'http://example.com';
+
+		$test_key = null;
+
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse());
+		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
+
+		$params = [
+				'user_ip' => '123.234.123.254'
+		];
+
+		$client->commentCheck($params, []);
+	}
 	public function testRestVerb()
 	{
 		$this->markTestIncomplete();

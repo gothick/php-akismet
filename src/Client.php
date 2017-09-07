@@ -174,7 +174,7 @@ class Client
 		// the only required parameters. Seems odd, but hey.
 		if (empty($params[ 'user_ip' ]) || empty($params[ 'user_agent' ]))
 		{
-			throw new \InvalidArgumentException(__METHOD__ . ' requires user_ip and user_agent in $params');
+			throw new Exception(__METHOD__ . ' requires user_ip and user_agent in $params');
 		}
 
 		$params = array_merge($server_params, $params);
