@@ -5,7 +5,8 @@ use GuzzleHttp\Handler\CurlHandler;
 
 class Client
 {
-
+	const VERB_VERIFY_KEY = 'verify-key';
+	const VERB_COMMENT_CHECK = 'comment-check';
 	/**
 	 * Akismet API key
 	 *
@@ -135,15 +136,11 @@ class Client
 
 		try
 		{
-			$response = $this->guzzle_client->request('POST', $this->apiUri('verify-key'),
-					[
-							'form_params' => [
-									"key" => $key_to_verify,
-									"blog" => $this->blog
-							],
-							'headers' => $this->getStandardHeaders()
-					]);
-
+			$params = [
+					"key" => $key_to_verify,
+					"blog" => $this->blog 
+			];
+			$response = $this->callApiMethod(self::VERB_VERIFY_KEY, $params);
 		} catch (\Exception $e)
 		{
 			// Wrap whatever exception we caught up in a new exception of our 
@@ -185,11 +182,7 @@ class Client
 
 		try
 		{
-			$response = $this->guzzle_client->request('POST', $this->apiUri('comment-check'),
-					[
-							'form_params' => $params,
-							'headers' => $this->getStandardHeaders()
-					]);
+			$response = $this->callApiMethod(self::VERB_COMMENT_CHECK, $params);
 		} catch (\Exception $e)
 		{
 			throw new Exception('Unexpected exception in ' . __METHOD__, 0, $e);
@@ -197,9 +190,34 @@ class Client
 		return new CommentCheckResult($response);
 	}
 
-	private function apiUri($method)
+	/**
+	 * Call an Akisemet API method.
+	 * @param string $verb
+	 * @param array $params
+	 * @return \GuzzleHttp\Psr7\Response
+	 */
+	private function callApiMethod($verb, $params)
 	{
-		if ($method == 'verify-key')
+		return $this->guzzle_client->request(
+				'POST',
+				$this->apiUri($verb),
+				[
+						'form_params' => $params,
+						'headers' => $this->getStandardHeaders()
+				]);
+	}
+
+	/**
+	 * Work out the Akismet API URL given the REST verb and our configured key. This would
+	 * be far less of a pain if Akismet just had you pass the API key as a parameter or 
+	 * a header. Gawd knows why they change the host for authenticated calls.
+	 * @param string $verb
+	 * @throws Exception
+	 * @return string
+	 */
+	private function apiUri($verb)
+	{
+		if ($verb == self::VERB_VERIFY_KEY)
 		{
 			return "https://rest.akismet.com/1.1/verify-key";
 		} else
@@ -208,7 +226,7 @@ class Client
 			{
 				throw new Exception("Can't call authenticated method without setting an API key in " . __METHOD__);
 			}
-			return "https://{$this->api_key}.rest.akismet.com/1.1/$method";
+			return "https://{$this->api_key}.rest.akismet.com/1.1/$verb";
 		}
 	}
 }
