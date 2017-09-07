@@ -35,7 +35,7 @@ abstract class ClientResult
 		if ($response->getStatusCode() != 200)
 		{
 			// Our clients are meant to check first
-			$message = 'Response with invalid status code in ' . __METHOD__;
+			$message = 'Response with invalid status code ' . $response->getStatusCode() . ' in ' . __METHOD__;
 			if ($this->hasDebugHelp())
 			{
 				$message .= ' (debug help: ' . $this->getDebugHelp() . ')';
