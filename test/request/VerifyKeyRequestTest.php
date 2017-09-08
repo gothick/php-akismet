@@ -100,15 +100,12 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 	public function testVerifyKeyInvalidResponseWithDebugHelp()
 	{
-		$this->markTestIncomplete();
-		/*
-		$this->expectException(\Gothick\AkismetClient\Exception::class);
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyInvalidResponseWithDebugHelp());
 		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'ABCDEF', $guzzle_client);
 		$result = $client->verifyKey();
-		assertFalse($result);
-		assertEquals($result->)
-		*/
+		$this->assertFalse($result->isValid());
+		$this->assertTrue($result->hasDebugHelp());
+		$this->assertNotEmpty($result->getDebugHelp());
 	}
 
 	public function testVerifyKeyCallIsUnauthenticated()
@@ -128,12 +125,35 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$this->assertEquals($host[0], 'rest.akismet.com');
 	}
+	public function testRestMethod()
+	{
+		$history_container = [];
+		$test_blog_url = 'http://example.com';
+
+		$test_key = 'PRECONFABCDEF12345!&$*$&???##'; // If that's not properly URL-encoded, we'll know about it!
+
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyValidResponse(), $history_container);
+		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
+
+		$result = $client->verifyKey();
+
+		$transaction = $history_container[0];
+		$request = $transaction['request'];
+		$this->assertEquals('POST', $request->getMethod());
+	}
 	public function testRestVerb()
 	{
-		$this->markTestIncomplete();
-	}
-	public function testRestUrl()
-	{
-		$this->markTestIncomplete();
+		$history_container = [];
+		$test_blog_url = 'http://example.com';
+		$test_key = 'PRECONFABCDEF12345!&$*$&???##'; // If that's not properly URL-encoded, we'll know about it!
+
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::verifyKeyValidResponse(), $history_container);
+		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
+
+		$result = $client->verifyKey();
+
+		$transaction = $history_container[0];
+		$request = $transaction['request'];
+		$this->assertEquals('/1.1/verify-key', $request->getUri()->getPath());
 	}
 }

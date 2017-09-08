@@ -165,7 +165,7 @@ class Client
 	 *        	If 'administrator', will always pass the check
 	.*
 	 */
-	public function commentCheck($params = array(), $server_params = array(), $user_role = 'guest')
+	public function commentCheck($params = array(), $server_params = array())
 	{
 		// According to the Akismet docs, these two (and 'blog', which we have as $this->blog already) are
 		// the only required parameters. Seems odd, but hey.
@@ -176,8 +176,7 @@ class Client
 
 		$params = array_merge($server_params, $params);
 		$params = array_merge($params, [
-				'blog' => $this->blog,
-				'user_role' => $user_role
+				'blog' => $this->blog
 		]);
 
 		try
