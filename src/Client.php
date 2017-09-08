@@ -2,7 +2,7 @@
 namespace Gothick\AkismetClient;
 
 /**
- * Akismet API client. 
+ * Akismet API client.
  * @author matt
  *
  */
@@ -98,6 +98,11 @@ class Client
 		}
 	}
 
+	/**
+	 * Headers to be sent on every API call
+	 * 
+	 * @return string[]
+	 */
 	private function getStandardHeaders()
 	{
 		// I'd use Guzzle middleware for this, as we want to add it on 
@@ -109,17 +114,28 @@ class Client
 		);
 	}
 
+	/**
+	 * From the docs:
+	 * Setting your user agent If possible, your user agent string should always use the following format: Application Name/Version | Plugin Name/Version
+	 * e.g. WordPress/4.4.1 | Akismet/3.1.7
+	 * 
+	 * @return string
+	 */
 	private function getOurUserAgent()
 	{
-		// From the docs:
-		// Setting your user agent If possible, your user agent string should always use the following format: Application Name/Version | Plugin Name/Version
-		// e.g. WordPress/4.4.1 | Akismet/3.1.7
-		// TODO: Check this is formatting correctly.
-		// TODO: Add unit test
 		return "{$this->app_name}/{$this->app_version} | Gothick\\AkismetClient/" . self::VERSION;
 	}
 
-	public function setApiKey($api_key)
+	/**
+	 * You may want to verify a key before you use it. To do that, construct a Client without an API
+	 * key, then use verifyKey($key) to verify the key, then use setKey($key) to set the validated
+	 * key. You can call verifyKey without a key set, but you must set a key before calling any other
+	 * API method.
+	 * 
+	 * @param string $api_key
+	 * @throws Exception
+	 */
+	public function setKey($api_key)
 	{
 		if (empty($api_key))
 		{
@@ -128,6 +144,12 @@ class Client
 		$this->api_key = $api_key;
 	}
 
+	/**
+	 * Verify an Akismet API key.
+	 * @param string $api_key
+	 * @throws Exception
+	 * @return \Gothick\AkismetClient\VerifyKeyResult
+	 */
 	public function verifyKey($api_key = null)
 	{
 		$key_to_verify = empty($api_key) ? $this->api_key : $api_key;

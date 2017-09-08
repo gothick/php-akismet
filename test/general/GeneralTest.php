@@ -39,12 +39,12 @@ final class GeneralTest extends \Gothick\AkismetClient\Test\TestBase
 	{
 		$this->expectException(\Gothick\AkismetClient\Exception::class);
 		$client = new Client('http://example.com', 'APPNAME', 'APPVERSION');
-		$client->setApiKey(null);
+		$client->setKey(null);
 	}
 	public function testCantSetEmptyApiKey()
 	{
 		$this->expectException(\Gothick\AkismetClient\Exception::class);
 		$client = new Client('http://example.com', 'APPNAME', 'APPVERSION');
-		$client->setApiKey('');
+		$client->setKey('');
 	}
 }

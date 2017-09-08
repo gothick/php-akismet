@@ -213,7 +213,7 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', null, $guzzle_client);
-		$client->setApiKey($test_key);
+		$client->setKey($test_key);
 
 		$params = [
 				'user_ip' => '123.234.123.254',
@@ -285,7 +285,7 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', null, $guzzle_client);
-		$client->setApiKey($test_key);
+		$client->setKey($test_key);
 
 		$params = [
 				'user_ip' => '123.234.123.254',
@@ -306,7 +306,7 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', null, $guzzle_client);
-		$client->setApiKey($test_key);
+		$client->setKey($test_key);
 
 		$params = [
 				'user_ip' => '123.234.123.254',

@@ -1,6 +1,11 @@
 <?php
 namespace Gothick\AkismetClient;
 
+/**
+ * Base class for Akismet client results, the other *Result classes.
+ * @author matt
+ *
+ */
 abstract class ClientResult
 {
 
