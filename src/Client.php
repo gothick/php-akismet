@@ -1,8 +1,11 @@
 <?php
 namespace Gothick\AkismetClient;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Handler\CurlHandler;
 
+/**
+ * Akismet API client. 
+ * @author matt
+ *
+ */
 class Client
 {
 	const VERB_VERIFY_KEY = 'verify-key';
