@@ -1,5 +1,5 @@
 <?php
-namespace Gothick\AkismetClient\Test\Request;
+namespace Gothick\AkismetClient\Test\General;
 
 use \Gothick\AkismetClient\Client;
 
