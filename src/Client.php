@@ -152,7 +152,7 @@ class Client
 	 * @throws Exception
 	 * @return \Gothick\AkismetClient\VerifyKeyResult
 	 */
-	public function verifyKey($api_key = null)
+	public function verifyKey($api_key = null, $is_test = false)
 	{
 		$key_to_verify = empty($api_key) ? $this->api_key : $api_key;
 
@@ -167,6 +167,10 @@ class Client
 					"key" => $key_to_verify,
 					"blog" => $this->blog
 			];
+			if ($is_test)
+			{
+				$params['is_test'] = "1";
+			}
 			$response = $this->callApiMethod(self::VERB_VERIFY_KEY, $params);
 		} catch (\Exception $e)
 		{

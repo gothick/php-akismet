@@ -2,10 +2,13 @@
 <phpunit bootstrap="./bootstrap.php" colors="true">
   <testsuites>
     <testsuite name="request-tests">
-      <directory suffix="Test.php">./request</directory>
+      <directory suffix="Test.php">./Request</directory>
     </testsuite>
     <testsuite name="general-tests">
-      <directory suffix="Test.php">./general</directory>
+      <directory suffix="Test.php">./General</directory>
+    </testsuite>
+    <testsuite name="live-tests">
+      <directory suffix="Test.php">./Live</directory>
     </testsuite>
   </testsuites>
   <filter>
