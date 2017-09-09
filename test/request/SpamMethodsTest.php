@@ -2,16 +2,28 @@
 
 namespace Gothick\AkismetClient\Test\Request;
 
-final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
+final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 {
-	public function testPassesRequiredParameters()
+	public function normalResponseProvider()
+	{
+		return [
+				['commentCheck', self::commentCheckHamResponse(), \Gothick\AkismetClient\CommentCheckResult::class, 'comment-check'],
+				['submitSpam', self::submitSpamResponse(), \Gothick\AkismetClient\SubmitSpamResult::class, 'submit-spam'],
+				['submitHam',  self::submitHamResponse(), \Gothick\AkismetClient\SubmitHamResult::class, 'submit-ham']
+		];
+	}
+
+	/**
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testPassesRequiredParameters($method, $response, $result_class)
 	{
 		$history_container = [];
 		$test_blog_url = 'http://example.com';
 
-		$test_key = 'PRECONFABCDEF12345'; 
+		$test_key = 'PRECONFABCDEF12345';
 
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response, $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
 
 		$params = [
@@ -19,8 +31,8 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
 		];
 
-		$result = $client->commentCheck($params, []);
-		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result, 'Unexpected class returned from commentCheck');
+		$result = $client->{$method}($params, []);
+		$this->assertInstanceOf($result_class, $result, 'Unexpected class returned from commentCheck');
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
@@ -34,14 +46,17 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 		$this->assertEquals($params['user_agent'], $request_vars['user_agent'], 'Client did not send correct user_agent');
 	}
 
-	public function testPassesExtraParameters()
+	/**
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testPassesExtraParameters($method, $response, $result_class)
 	{
 		$history_container = [];
 		$test_blog_url = 'http://example.com';
 
 		$test_key = 'PRECONFABCDEF12345';
 
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response, $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
 
 		$params = [
@@ -51,8 +66,8 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 				'random' => 'g6Wh(FbMQ&G=Wx=gxtZ$Vx?ed#gfenAYKLXQVAZiY*VNyV&bLuxD+PZVjjEccXT$x'
 		];
 
-		$result = $client->commentCheck($params, []);
-		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result, 'Unexpected class returned from commentCheck');
+		$result = $client->{$method}($params, []);
+		$this->assertInstanceOf($result_class, $result, 'Unexpected class returned from commentCheck');
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
@@ -64,14 +79,17 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 		$this->assertEquals($request_vars['random'], 'g6Wh(FbMQ&G=Wx=gxtZ$Vx?ed#gfenAYKLXQVAZiY*VNyV&bLuxD+PZVjjEccXT$x', 'Client did not send random');
 	}
 
-	public function testPassesServerParameters()
+	/**
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testPassesServerParameters($method, $response, $result_class)
 	{
 		$history_container = [];
 		$test_blog_url = 'http://example.com';
 
 		$test_key = 'PRECONFABCDEF12345';
 
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response, $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
 
 		$params = [
@@ -85,7 +103,8 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 				'CLASHING_NAME' => 'should be overridden'
 		];
 
-		$result = $client->commentCheck($params, $server_params);
+		$result = $client->{$method}($params, $server_params);
+		$this->assertInstanceOf($result_class, $result);
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
@@ -99,7 +118,18 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 		$this->assertEquals($request_vars['SERVER_SOFTWARE'], 'Apache/2.4.18 (Ubuntu)', 'Client did not send correct SERVER_SOFTWARE');
 	}
 
-	public function testFailsOnInvalid200Responses()
+	public function spamMethodsProvider()
+	{
+		return [
+				['commentCheck'],
+				['submitHam'],
+				['submitSpam']
+		];
+	}
+	/**
+	 * @dataProvider spamMethodsProvider
+	 */
+	public function testFailsOnInvalid200Responses($method)
 	{
 		$this->expectException(\Gothick\AkismetClient\Exception::class);
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::unexpected200Response());
@@ -108,19 +138,22 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 				'user_ip' => '123.234.123.254',
 				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
 		];
-		$client->commentCheck($params);
+		$client->$method($params);
 	}
 
-	public function testDebugHelpMessage()
+	/**
+	 * @dataProvider spamMethodsProvider
+	 */
+	public function testDebugHelpMessage($method)
 	{
 		$this->expectException(\Gothick\AkismetClient\Exception::class);
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckBadParametersResponse());
+		$guzzle_client = self::getMockGuzzleClientWithResponse(self::badParametersResponse());
 		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'TESTKEY', $guzzle_client);
 		$params = [
 				'user_ip' => '123.234.123.254',
 				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
 		];
-		$client->commentCheck($params);
+		$client->{$method}($params);
 	}
 
 	public function testSpamResponse()
@@ -182,14 +215,20 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 		$this->assertFalse($result->isSpam());
 		$this->assertFalse($result->isBlatantSpam());
 	}
-	public function testUsesApiKey()
+
+	/**
+	 * We don't need to do much for submitHam and submitSpam responses, because they just return a simple
+	 * string no matter what, according to the API. Let's just make sure we get the right result class
+	 * back in all cases.
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testResponseClass($method, $response, $result_class)
 	{
-		$history_container = [];
 		$test_blog_url = 'http://example.com';
 
 		$test_key = 'PRECONFABCDEF12345';
 
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
 
 		$params = [
@@ -197,21 +236,47 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
 		];
 
-		$client->commentCheck($params, []);
-
-		$transaction = $history_container[0];
-		$request = $transaction['request'];
-		$this->assertTrue($request->hasHeader('Host'));
-		$this->assertEquals(strtolower($test_key) . '.rest.akismet.com', $request->getHeaderLine('Host'));
+		$result = $client->{$method}($params, []);
+		$this->assertInstanceOf($result_class, $result, 'Unexpected class returned from ' . $method);
 	}
-	public function testUsesApiKeyWhenSetManually()
+
+	/**
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testUsesApiKey($method, $response, $result_class)
 	{
 		$history_container = [];
 		$test_blog_url = 'http://example.com';
 
 		$test_key = 'PRECONFABCDEF12345';
 
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response, $history_container);
+		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
+
+		$params = [
+				'user_ip' => '123.234.123.254',
+				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
+		];
+
+		$client->{$method}($params, []);
+
+		$transaction = $history_container[0];
+		$request = $transaction['request'];
+		$this->assertTrue($request->hasHeader('Host'));
+		$this->assertEquals(strtolower($test_key) . '.rest.akismet.com', $request->getHeaderLine('Host'));
+	}
+
+	/**
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testUsesApiKeyWhenSetManually($method, $response, $result_class)
+	{
+		$history_container = [];
+		$test_blog_url = 'http://example.com';
+
+		$test_key = 'PRECONFABCDEF12345';
+
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response, $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', null, $guzzle_client);
 		$client->setKey($test_key);
 
@@ -220,7 +285,7 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
 		];
 
-		$client->commentCheck($params, []);
+		$client->{$method}($params, []);
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
@@ -228,14 +293,17 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 		$this->assertEquals(strtolower($test_key) . '.rest.akismet.com', $request->getHeaderLine('Host'));
 	}
 
-	public function testFailsWithoutApiKey()
+	/**
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testFailsWithoutApiKey($method, $response, $result_class)
 	{
 		$this->expectException(\Gothick\AkismetClient\Exception::class);
 		$test_blog_url = 'http://example.com';
 
 		$test_key = null;
 
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse());
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
 
 		$params = [
@@ -243,47 +311,57 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
 		];
 
-		$client->commentCheck($params, []);
+		$client->{$method}($params, []);
 	}
-	public function testFailsWithoutUserIp()
+	/**
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testFailsWithoutUserIp($method, $response, $result_class)
 	{
 		$this->expectException(\Gothick\AkismetClient\Exception::class);
 		$test_blog_url = 'http://example.com';
 
 		$test_key = null;
 
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse());
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
 
 		$params = [
 				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
 		];
 
-		$client->commentCheck($params, []);
+		$client->{$method}($params, []);
 	}
-	public function testFailsWithoutUserAgent()
+	/**
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testFailsWithoutUserAgent($method, $response, $result_class)
 	{
 		$this->expectException(\Gothick\AkismetClient\Exception::class);
 		$test_blog_url = 'http://example.com';
 
 		$test_key = null;
 
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse());
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', $test_key, $guzzle_client);
 
 		$params = [
 				'user_ip' => '123.234.123.254'
 		];
 
-		$client->commentCheck($params, []);
+		$client->{$method}($params, []);
 	}
-	public function testRestMethod()
+
+	/**
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testRestMethod($method, $response, $result_class)
 	{
 		$history_container = [];
 		$test_blog_url = 'http://example.com';
 		$test_key = 'PRECONFABCDEF12345';
 
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response, $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', null, $guzzle_client);
 		$client->setKey($test_key);
 
@@ -292,19 +370,22 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
 		];
 
-		$client->commentCheck($params, []);
+		$client->{$method}($params, []);
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
 		$this->assertEquals('POST', $request->getMethod());
 	}
-	public function testRestVerb()
+	/**
+	 * @dataProvider normalResponseProvider
+	 */
+	public function testRestVerb($method, $response, $result_class, $verb_should_be)
 	{
 		$history_container = [];
 		$test_blog_url = 'http://example.com';
 		$test_key = 'PRECONFABCDEF12345';
 
-		$guzzle_client = self::getMockGuzzleClientWithResponse(self::commentCheckHamResponse(), $history_container);
+		$guzzle_client = self::getMockGuzzleClientWithResponse($response, $history_container);
 		$client = new \Gothick\AkismetClient\Client($test_blog_url, '@@@APPNAME@@@', '###APPVERSION###', null, $guzzle_client);
 		$client->setKey($test_key);
 
@@ -313,11 +394,11 @@ final class CommentCheckTest extends \Gothick\AkismetClient\Test\TestBase
 				'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8'
 		];
 
-		$client->commentCheck($params, []);
+		$client->{$method}($params, []);
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
-		$this->assertEquals('/1.1/comment-check', $request->getUri()->getPath());
+		$this->assertEquals('/1.1/' . $verb_should_be, $request->getUri()->getPath());
 	}
 }
 

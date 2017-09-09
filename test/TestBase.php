@@ -129,7 +129,7 @@ abstract class TestBase extends TestCase
 				);
 	}
 
-	protected static function commentCheckBadParametersResponse()
+	protected static function badParametersResponse()
 	{
 		return new Response(
 				200,
@@ -173,5 +173,24 @@ abstract class TestBase extends TestCase
 				'Internal Server Error'
 				);
 	}
-	
+
+	protected static function submitSpamResponse()
+	{
+		return new Response(
+				200,
+				[
+						'Connection' => 'keep-alive',
+						'Content-Length' => '41',
+						'Content-Type' => 'text/plain; charset=utf-8',
+						'Date' => 'Wed, 06 Sep 2017 11:54:28 GMT',
+						'Server' => 'nginx'
+				],
+				'Thanks for making the web a better place.'
+				);
+	}
+	protected static function submitHamResponse()
+	{
+		// submit-ham and submit-spam return identical responses
+		return self::submitSpamResponse();
+	}
 }

@@ -10,6 +10,8 @@ class Client
 {
 	const VERB_VERIFY_KEY = 'verify-key';
 	const VERB_COMMENT_CHECK = 'comment-check';
+	const VERB_SUBMIT_SPAM = 'submit-spam';
+	const VERB_SUBMIT_HAM = 'submit-ham';
 	/**
 	 * Akismet API key
 	 *
@@ -58,8 +60,8 @@ class Client
 
 	/**
 	 * Make an Akismet API client.
-	 * Typically you'd provide an API key in $api_key, at which point you can make any call. Without the optional 
-	 * $api_key you're limited to calling verifyApiKey. Once you've verified a key you can call setApiKey() 
+	 * Typically you'd provide an API key in $api_key, at which point you can make any call. Without the optional
+	 * $api_key you're limited to calling verifyApiKey. Once you've verified a key you can call setApiKey()
 	 * later and start using the rest of the API.
 	 *
 	 * @param string $app_url
@@ -71,7 +73,7 @@ class Client
 	 * @param string $api_key
 	 *        	(optional) Akismet API key
 	 * @param
-	 *        	\GuzzleHttp\Client (optional) $guzzle_client. You can inject a mock, or a non-Curl-using Guzzle 
+	 *        	\GuzzleHttp\Client (optional) $guzzle_client. You can inject a mock, or a non-Curl-using Guzzle
 	 *        	client here, say. Otherwise we'll just make one.
 	 * @throws Exception
 	 */
@@ -88,7 +90,7 @@ class Client
 		$this->app_version = $app_version;
 		$this->api_key = $api_key;
 
-		// Our client is passed in, as dependency injection is helpful for 
+		// Our client is passed in, as dependency injection is helpful for
 		// testing, but in the normal course of things we'll probably just
 		// create it ourselves.
 		$this->guzzle_client = $guzzle_client;
@@ -100,14 +102,14 @@ class Client
 
 	/**
 	 * Headers to be sent on every API call
-	 * 
+	 *
 	 * @return string[]
 	 */
 	private function getStandardHeaders()
 	{
-		// I'd use Guzzle middleware for this, as we want to add it on 
-		// every request, but how do I do that and support dependency 
-		// injection of our client? You can't add middleware to a 
+		// I'd use Guzzle middleware for this, as we want to add it on
+		// every request, but how do I do that and support dependency
+		// injection of our client? You can't add middleware to a
 		// Guzzle client after it's been constructed, right?
 		return array(
 				'User-Agent' => $this->getOurUserAgent()
@@ -118,7 +120,7 @@ class Client
 	 * From the docs:
 	 * Setting your user agent If possible, your user agent string should always use the following format: Application Name/Version | Plugin Name/Version
 	 * e.g. WordPress/4.4.1 | Akismet/3.1.7
-	 * 
+	 *
 	 * @return string
 	 */
 	private function getOurUserAgent()
@@ -131,7 +133,7 @@ class Client
 	 * key, then use verifyKey($key) to verify the key, then use setKey($key) to set the validated
 	 * key. You can call verifyKey without a key set, but you must set a key before calling any other
 	 * API method.
-	 * 
+	 *
 	 * @param string $api_key
 	 * @throws Exception
 	 */
@@ -163,12 +165,12 @@ class Client
 		{
 			$params = [
 					"key" => $key_to_verify,
-					"blog" => $this->blog 
+					"blog" => $this->blog
 			];
 			$response = $this->callApiMethod(self::VERB_VERIFY_KEY, $params);
 		} catch (\Exception $e)
 		{
-			// Wrap whatever exception we caught up in a new exception of our 
+			// Wrap whatever exception we caught up in a new exception of our
 			// own type and throw it along up the line.
 			throw new Exception('Unexpected exception in ' . __METHOD__, 0, $e);
 		}
@@ -178,27 +180,72 @@ class Client
 	/**
 	 * Check a comment for spam.
 	 * See the Akismet API documentation for full details:
-	 * https://akismet.com/development/api/#comment-check. 
+	 * https://akismet.com/development/api/#comment-check.
 	 * Returns a valid ClientResult object or throws an exception.
 	 *
-	 * @param array $params
+	 * @param string[] $params
 	 *        	User IP, User-Agent, the message, etc. See the Akismet API
 	 *        	documentation for details.
-	 * @param array $server_params
+	 * @param string[] $server_params
 	 *        	This can just be $_SERVER, if you have access to it
-	 * @param string $user_role
-	 *        	If 'administrator', will always pass the check
-	.*
 	 */
 	public function commentCheck($params = array(), $server_params = array())
 	{
-		// According to the Akismet docs, these two (and 'blog', which we have as $this->blog already) are
-		// the only required parameters. Seems odd, but hey.
+		return new CommentCheckResult($this->callSpamMethod(self::VERB_COMMENT_CHECK, $params, $server_params));
+	}
+
+	/**
+	 * Submit a comment as spam. This must use the same parameters as those used when checking the
+	 * comment with commetnCheck.
+	 * See the Akismet API documentation for full details:
+	 * https://akismet.com/development/api/#comment-check.
+	 * Returns a valid ClientResult object or throws an exception.
+	 *
+	 * @param string[] $params
+	 *        	User IP, User-Agent, the message, etc. See the Akismet API
+	 *        	documentation for details.
+	 * @param string[] $server_params
+	 *        	This can just be $_SERVER, if you have access to it
+	 */
+	public function submitSpam($params = array(), $server_params = array())
+	{
+		return new SubmitSpamResult($this->callSpamMethod(self::VERB_SUBMIT_SPAM, $params, $server_params));
+	}
+
+	/**
+	 * Submit a comment as ham. This must use the same parameters as those used when checking the
+	 * comment with commetnCheck.
+	 * See the Akismet API documentation for full details:
+	 * https://akismet.com/development/api/#comment-check.
+	 * Returns a valid ClientResult object or throws an exception.
+	 *
+	 * @param string[] $params
+	 *        	User IP, User-Agent, the message, etc. See the Akismet API
+	 *        	documentation for details.
+	 * @param string[] $server_params
+	 *        	This can just be $_SERVER, if you have access to it
+	 */
+	public function submitHam($params = array(), $server_params = array())
+	{
+		return new SubmitHamResult($this->callSpamMethod(self::VERB_SUBMIT_HAM, $params, $server_params));
+	}
+
+	/**
+	 * Common code for calling check-comment, submit-ham and submit-spam; these all
+	 * work in the same way, just returning slightly different results.
+	 * @param string $verb
+	 * @param string[] $params
+	 * @param string[] $server_params
+	 * @throws Exception
+	 */
+	protected function callSpamMethod($verb, $params, $server_params)
+	{
+		// comment-check, submit-spam and submit-ham all work the same way and take
+		// the same arguments, so this handles them all.
 		if (empty($params[ 'user_ip' ]) || empty($params[ 'user_agent' ]))
 		{
-			throw new Exception(__METHOD__ . ' requires user_ip and user_agent in $params');
+			throw new Exception(__METHOD__ . ' requires user_ip and user_agent in $params (' . $verb . ')');
 		}
-
 		$params = array_merge($server_params, $params);
 		$params = array_merge($params, [
 				'blog' => $this->blog
@@ -206,14 +253,13 @@ class Client
 
 		try
 		{
-			$response = $this->callApiMethod(self::VERB_COMMENT_CHECK, $params);
+			$response = $this->callApiMethod($verb, $params);
 		} catch (\Exception $e)
 		{
-			throw new Exception('Unexpected exception in ' . __METHOD__, 0, $e);
+			throw new Exception('Unexpected exception in ' . __METHOD__ . ' (' . $verb . ')', 0, $e);
 		}
-		return new CommentCheckResult($response);
+		return $response;
 	}
-
 	/**
 	 * Call an Akisemet API method.
 	 * @param string $verb
@@ -233,7 +279,7 @@ class Client
 
 	/**
 	 * Work out the Akismet API URL given the REST verb and our configured key. This would
-	 * be far less of a pain if Akismet just had you pass the API key as a parameter or 
+	 * be far less of a pain if Akismet just had you pass the API key as a parameter or
 	 * a header. Gawd knows why they change the host for authenticated calls.
 	 * @param string $verb
 	 * @throws Exception
