@@ -4,9 +4,9 @@ namespace Gothick\AkismetClient\Test\Live;
 
 use \Gothick\AkismetClient\Client;
 
-class LiveCheckCommentTest extends LiveTest
+class LiveSubmissionsTest extends LiveTest
 {
-	public function testCheckSpamComment()
+	public function testSubmitSpam()
 	{
 		global $AKISMET_API_KEY;
 		$client = new Client('http://gothick.org.uk', 'Gothick\AkismetClient Test Suite', '1.0', $AKISMET_API_KEY);
@@ -63,11 +63,10 @@ class LiveCheckCommentTest extends LiveTest
 				'REQUEST_TIME' => 1504989908,
 		);
 
-		$result = $client->commentCheck($params, $server);
-		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result);
-		$this->assertTrue($result->isSpam());
+		$result = $client->submitSpam($params, $server);
+		$this->assertInstanceOf(\Gothick\AkismetClient\SubmitSpamResult::class, $result);
 	}
-	public function testCheckHamComment()
+	public function testSubmitHam()
 	{
 		global $AKISMET_API_KEY;
 		$client = new Client('http://gothick.org.uk', 'Gothick\AkismetClient Test Suite', '1.0', $AKISMET_API_KEY);
@@ -79,9 +78,9 @@ class LiveCheckCommentTest extends LiveTest
 				'comment_type' => 'forum-post',
 				'comment_author' => 'Matt Gibson',
 				'comment_author_email' => 'gothick+akismetphp@gothick.org.uk',
+				'comment_content' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras at elit nibh, in pretium tellus. Donec id dui mi. Nam malesuada, velit sed porta mollis, dolor felis eleifend diam, nec convallis orci libero eget augue. Vestibulum quis pretium tellus. Morbi nulla nulla, tempus congue viverra id, iaculis ultricies lorem. Fusce leo turpis, luctus ac dignissim ac, posuere vitae odio.',
 				// This magic value should ensure we always get a ham result back.
-				'user_role' => 'administrator',
-				'comment_content' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras at elit nibh, in pretium tellus. Donec id dui mi. Nam malesuada, velit sed porta mollis, dolor felis eleifend diam, nec convallis orci libero eget augue. Vestibulum quis pretium tellus. Morbi nulla nulla, tempus congue viverra id, iaculis ultricies lorem. Fusce leo turpis, luctus ac dignissim ac, posuere vitae odio.'
+				'user_role' => 'administrator'
 		];
 
 		// Grabbed as an example from a test file on an old server of mine.
@@ -125,8 +124,7 @@ class LiveCheckCommentTest extends LiveTest
 				'REQUEST_TIME' => 1504989908,
 		);
 
-		$result = $client->commentCheck($params, $server);
-		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result);
-		$this->assertFalse($result->isSpam());
+		$result = $client->submitHam($params, $server);
+		$this->assertInstanceOf(\Gothick\AkismetClient\SubmitHamResult::class, $result);
 	}
 }
