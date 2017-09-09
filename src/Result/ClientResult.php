@@ -1,5 +1,5 @@
 <?php
-namespace Gothick\AkismetClient;
+namespace Gothick\AkismetClient\Result;
 
 /**
  * Base class for Akismet client results, the other *Result classes.
@@ -28,7 +28,7 @@ abstract class ClientResult
 
 	/**
 	 * Make a result, throwing exceptions on invalid responses and non-200 http status codes.
-	 * 
+	 *
 	 * @param \GuzzleHttp\Psr7\Response $response
 	 * @param array $valid_values
 	 * @throws Exception
@@ -54,7 +54,7 @@ abstract class ClientResult
 			{
 				$message .= ' (debug help: ' . $this->getDebugHelp() . ')';
 			}
-			throw new Exception($message);
+			throw new \Gothick\AkismetClient\AkismetException($message);
 		}
 	}
 

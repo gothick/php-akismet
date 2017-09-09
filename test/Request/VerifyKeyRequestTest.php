@@ -2,7 +2,7 @@
 
 namespace Gothick\AkismetClient\Test\Request;
 
-use Gothick\AkismetClient\VerifyKeyResult;
+use Gothick\AkismetClient\Result\VerifyKeyResult;
 
 final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 {
@@ -29,7 +29,7 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 	public function testCantVerifyWithoutKey()
 	{
-		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$this->expectException(\Gothick\AkismetClient\AkismetException::class);
 		$test_blog_url = 'http://example.com';
 
 		$test_key = 'PRECONFABCDEF12345!&$*$&???##'; // If that's not properly URL-encoded, we'll know about it!
@@ -84,7 +84,7 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 	public function testVerifyKeyThrowsExceptionOnServerError()
 	{
-		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$this->expectException(\Gothick\AkismetClient\AkismetException::class);
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::serverErrorResponse());
 		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'ABCDEF', $guzzle_client);
 		$this->assertFalse($client->verifyKey());
@@ -92,7 +92,7 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 	public function testVerifyKeyThrowsExceptionOnUnexpected200Response()
 	{
-		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$this->expectException(\Gothick\AkismetClient\AkismetException::class);
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::unexpected200Response());
 		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'ABCDEF', $guzzle_client);
 		$this->assertFalse($client->verifyKey());

@@ -7,9 +7,9 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 	public function normalResponseProvider()
 	{
 		return [
-				['commentCheck', self::commentCheckHamResponse(), \Gothick\AkismetClient\CommentCheckResult::class, 'comment-check'],
-				['submitSpam', self::submitSpamResponse(), \Gothick\AkismetClient\SubmitSpamResult::class, 'submit-spam'],
-				['submitHam',  self::submitHamResponse(), \Gothick\AkismetClient\SubmitHamResult::class, 'submit-ham']
+				['commentCheck', self::commentCheckHamResponse(), \Gothick\AkismetClient\Result\CommentCheckResult::class, 'comment-check'],
+				['submitSpam', self::submitSpamResponse(), \Gothick\AkismetClient\Result\SubmitSpamResult::class, 'submit-spam'],
+				['submitHam',  self::submitHamResponse(), \Gothick\AkismetClient\Result\SubmitHamResult::class, 'submit-ham']
 		];
 	}
 
@@ -131,7 +131,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 	 */
 	public function testFailsOnInvalid200Responses($method)
 	{
-		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$this->expectException(\Gothick\AkismetClient\AkismetException::class);
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::unexpected200Response());
 		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'TESTKEY', $guzzle_client);
 		$params = [
@@ -146,7 +146,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 	 */
 	public function testDebugHelpMessage($method)
 	{
-		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$this->expectException(\Gothick\AkismetClient\AkismetException::class);
 		$guzzle_client = self::getMockGuzzleClientWithResponse(self::badParametersResponse());
 		$client = new \Gothick\AkismetClient\Client('http://example.com', '@@@APPNAME@@@', '###APPVERSION###', 'TESTKEY', $guzzle_client);
 		$params = [
@@ -171,7 +171,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 		];
 
 		$result = $client->commentCheck($params, []);
-		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result, 'Unexpected class returned from commentCheck');
+		$this->assertInstanceOf(\Gothick\AkismetClient\Result\CommentCheckResult::class, $result, 'Unexpected class returned from commentCheck');
 		$this->assertTrue($result->isSpam());
 		$this->assertFalse($result->isBlatantSpam());
 	}
@@ -191,7 +191,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 		];
 
 		$result = $client->commentCheck($params, []);
-		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result, 'Unexpected class returned from commentCheck');
+		$this->assertInstanceOf(\Gothick\AkismetClient\Result\CommentCheckResult::class, $result, 'Unexpected class returned from commentCheck');
 		$this->assertTrue($result->isSpam());
 		$this->assertTrue($result->isBlatantSpam());
 	}
@@ -211,7 +211,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 		];
 
 		$result = $client->commentCheck($params, []);
-		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result, 'Unexpected class returned from commentCheck');
+		$this->assertInstanceOf(\Gothick\AkismetClient\Result\CommentCheckResult::class, $result, 'Unexpected class returned from commentCheck');
 		$this->assertFalse($result->isSpam());
 		$this->assertFalse($result->isBlatantSpam());
 	}
@@ -298,7 +298,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 	 */
 	public function testFailsWithoutApiKey($method, $response, $result_class)
 	{
-		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$this->expectException(\Gothick\AkismetClient\AkismetException::class);
 		$test_blog_url = 'http://example.com';
 
 		$test_key = null;
@@ -318,7 +318,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 	 */
 	public function testFailsWithoutUserIp($method, $response, $result_class)
 	{
-		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$this->expectException(\Gothick\AkismetClient\AkismetException::class);
 		$test_blog_url = 'http://example.com';
 
 		$test_key = null;
@@ -337,7 +337,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 	 */
 	public function testFailsWithoutUserAgent($method, $response, $result_class)
 	{
-		$this->expectException(\Gothick\AkismetClient\Exception::class);
+		$this->expectException(\Gothick\AkismetClient\AkismetException::class);
 		$test_blog_url = 'http://example.com';
 
 		$test_key = null;

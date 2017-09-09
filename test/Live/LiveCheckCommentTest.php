@@ -64,7 +64,7 @@ class LiveCheckCommentTest extends LiveTest
 		);
 
 		$result = $client->commentCheck($params, $server);
-		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result);
+		$this->assertInstanceOf(\Gothick\AkismetClient\Result\CommentCheckResult::class, $result);
 		$this->assertTrue($result->isSpam());
 	}
 	public function testCheckHamComment()
@@ -126,7 +126,7 @@ class LiveCheckCommentTest extends LiveTest
 		);
 
 		$result = $client->commentCheck($params, $server);
-		$this->assertInstanceOf(\Gothick\AkismetClient\CommentCheckResult::class, $result);
+		$this->assertInstanceOf(\Gothick\AkismetClient\Result\CommentCheckResult::class, $result);
 		$this->assertFalse($result->isSpam());
 	}
 }

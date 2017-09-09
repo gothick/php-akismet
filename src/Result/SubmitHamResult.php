@@ -1,5 +1,5 @@
 <?php
-namespace Gothick\AkismetClient;
+namespace Gothick\AkismetClient\Result;
 
 /**
  * Result of calling the submit-ham method on the Akismet API.

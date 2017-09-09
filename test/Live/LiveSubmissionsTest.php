@@ -64,7 +64,7 @@ class LiveSubmissionsTest extends LiveTest
 		);
 
 		$result = $client->submitSpam($params, $server);
-		$this->assertInstanceOf(\Gothick\AkismetClient\SubmitSpamResult::class, $result);
+		$this->assertInstanceOf(\Gothick\AkismetClient\Result\SubmitSpamResult::class, $result);
 	}
 	public function testSubmitHam()
 	{
@@ -125,6 +125,6 @@ class LiveSubmissionsTest extends LiveTest
 		);
 
 		$result = $client->submitHam($params, $server);
-		$this->assertInstanceOf(\Gothick\AkismetClient\SubmitHamResult::class, $result);
+		$this->assertInstanceOf(\Gothick\AkismetClient\Result\SubmitHamResult::class, $result);
 	}
 }

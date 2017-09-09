@@ -1,5 +1,5 @@
 <?php
-namespace Gothick\AkismetClient;
+namespace Gothick\AkismetClient\Result;
 
 /**
  * Result of calling the client-check method on the Akismet API.

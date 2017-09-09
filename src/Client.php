@@ -1,6 +1,11 @@
 <?php
 namespace Gothick\AkismetClient;
 
+use \Gothick\AkismetClient\Result\VerifyKeyResult;
+use \Gothick\AkismetClient\Result\CommentCheckResult;
+use \Gothick\AkismetClient\Result\SubmitHamResult;
+use \Gothick\AkismetClient\Result\SubmitSpamResult;
+
 /**
  * Akismet API client.
  * @author matt
@@ -75,13 +80,13 @@ class Client
 	 * @param
 	 *        	\GuzzleHttp\Client (optional) $guzzle_client. You can inject a mock, or a non-Curl-using Guzzle
 	 *        	client here, say. Otherwise we'll just make one.
-	 * @throws Exception
+	 * @throws \Gothick\AkismetClient\AkismetException
 	 */
 	public function __construct($app_url, $app_name, $app_version, $api_key = null, $guzzle_client = null)
 	{
 		if ((empty($app_url)) || (empty($app_name)) || (empty($app_version)))
 		{
-			throw new Exception('Must supply app URL, name and version in ' . __METHOD__);
+			throw new AkismetException('Must supply app URL, name and version in ' . __METHOD__);
 		}
 		// The Akismet API calls it a blog, so keep consistent.
 		$this->blog = $app_url;
@@ -135,13 +140,13 @@ class Client
 	 * API method.
 	 *
 	 * @param string $api_key
-	 * @throws Exception
+	 * @throws \Gothick\AkismetClient\AkismetException
 	 */
 	public function setKey($api_key)
 	{
 		if (empty($api_key))
 		{
-			throw new Exception('Must provide an API key in ' . __METHOD__);
+			throw new AkismetException('Must provide an API key in ' . __METHOD__);
 		}
 		$this->api_key = $api_key;
 	}
@@ -153,8 +158,8 @@ class Client
 	 *                         which you should only pass when testing. To be honest, it's not even clear
 	 *                         from the documentation if that parameter is used in verify-key, but better
 	 *                         safe than sorry...
-	 * @throws Exception
-	 * @return \Gothick\AkismetClient\VerifyKeyResult
+	 * @throws \Gothick\AkismetClient\AkismetException
+	 * @return \Gothick\AkismetClient\Result\VerifyKeyResult
 	 */
 	public function verifyKey($api_key = null, $params = array())
 	{
@@ -162,7 +167,7 @@ class Client
 
 		if (empty($key_to_verify))
 		{
-			throw new Exception('Must provide or pre-configure a key in ' . __METHOD__);
+			throw new AkismetException('Must provide or pre-configure a key in ' . __METHOD__);
 		}
 
 		try
@@ -179,7 +184,7 @@ class Client
 		{
 			// Wrap whatever exception we caught up in a new exception of our
 			// own type and throw it along up the line.
-			throw new Exception('Unexpected exception in ' . __METHOD__, 0, $e);
+			throw new AkismetException('Unexpected exception in ' . __METHOD__, 0, $e);
 		}
 		return new VerifyKeyResult($response);
 	}
@@ -188,13 +193,14 @@ class Client
 	 * Check a comment for spam.
 	 * See the Akismet API documentation for full details:
 	 * https://akismet.com/development/api/#comment-check.
-	 * Returns a valid ClientResult object or throws an exception.
+	 * Returns a valid CommentCheckResult object or throws an exception.
 	 *
 	 * @param string[] $params
 	 *        	User IP, User-Agent, the message, etc. See the Akismet API
 	 *        	documentation for details.
 	 * @param string[] $server_params
 	 *        	This can just be $_SERVER, if you have access to it
+	 * @return \Gothick\AkismetClient\Result\CommentCheckResult
 	 */
 	public function commentCheck($params = array(), $server_params = array())
 	{
@@ -206,13 +212,14 @@ class Client
 	 * comment with commetnCheck.
 	 * See the Akismet API documentation for full details:
 	 * https://akismet.com/development/api/#comment-check.
-	 * Returns a valid ClientResult object or throws an exception.
+	 * Returns a valid SubmitSpamResult object or throws an exception.
 	 *
 	 * @param string[] $params
 	 *        	User IP, User-Agent, the message, etc. See the Akismet API
 	 *        	documentation for details.
 	 * @param string[] $server_params
 	 *        	This can just be $_SERVER, if you have access to it
+	 * @return \Gothick\AkismetClient\Result\SubmitSpamResult
 	 */
 	public function submitSpam($params = array(), $server_params = array())
 	{
@@ -224,13 +231,14 @@ class Client
 	 * comment with commetnCheck.
 	 * See the Akismet API documentation for full details:
 	 * https://akismet.com/development/api/#comment-check.
-	 * Returns a valid ClientResult object or throws an exception.
+	 * Returns a valid SubmitHamResult object or throws an exception.
 	 *
 	 * @param string[] $params
 	 *        	User IP, User-Agent, the message, etc. See the Akismet API
 	 *        	documentation for details.
 	 * @param string[] $server_params
 	 *        	This can just be $_SERVER, if you have access to it
+	 * @return \Gothick\AkismetClient\Result\SubmitHamResult
 	 */
 	public function submitHam($params = array(), $server_params = array())
 	{
@@ -243,7 +251,7 @@ class Client
 	 * @param string $verb
 	 * @param string[] $params
 	 * @param string[] $server_params
-	 * @throws Exception
+	 * @throws \Gothick\AkismetClient\AkismetException
 	 */
 	protected function callSpamMethod($verb, $params, $server_params)
 	{
@@ -251,7 +259,7 @@ class Client
 		// the same arguments, so this handles them all.
 		if (empty($params[ 'user_ip' ]) || empty($params[ 'user_agent' ]))
 		{
-			throw new Exception(__METHOD__ . ' requires user_ip and user_agent in $params (' . $verb . ')');
+			throw new AkismetException(__METHOD__ . ' requires user_ip and user_agent in $params (' . $verb . ')');
 		}
 		$params = array_merge($server_params, $params);
 		$params = array_merge($params, [
@@ -263,7 +271,7 @@ class Client
 			$response = $this->callApiMethod($verb, $params);
 		} catch (\Exception $e)
 		{
-			throw new Exception('Unexpected exception in ' . __METHOD__ . ' (' . $verb . ')', 0, $e);
+			throw new AkismetException('Unexpected exception in ' . __METHOD__ . ' (' . $verb . ')', 0, $e);
 		}
 		return $response;
 	}
@@ -289,7 +297,7 @@ class Client
 	 * be far less of a pain if Akismet just had you pass the API key as a parameter or
 	 * a header. Gawd knows why they change the host for authenticated calls.
 	 * @param string $verb
-	 * @throws Exception
+	 * @throws \Gothick\AkismetClient\AkismetException
 	 * @return string
 	 */
 	private function apiUri($verb)
@@ -301,7 +309,7 @@ class Client
 		{
 			if (empty($this->api_key))
 			{
-				throw new Exception("Can't call authenticated method without setting an API key in " . __METHOD__);
+				throw new AkismetException("Can't call authenticated method without setting an API key in " . __METHOD__);
 			}
 			return "https://{$this->api_key}.rest.akismet.com/1.1/$verb";
 		}
