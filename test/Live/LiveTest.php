@@ -21,7 +21,6 @@ abstract class LiveTest extends \Gothick\AkismetClient\Test\TestBase
 		if (empty($AKISMET_API_KEY))
 		{
 			$this->markTestSkipped('Skipping "live" API server tests as no test API key is configured.');
-			die();
 		}
 	}
 }
