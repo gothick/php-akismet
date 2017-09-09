@@ -169,7 +169,7 @@ class Client
 			];
 			if ($is_test)
 			{
-				$params['is_test'] = "1";
+				$params[ 'is_test' ] = "1";
 			}
 			$response = $this->callApiMethod(self::VERB_VERIFY_KEY, $params);
 		} catch (\Exception $e)
