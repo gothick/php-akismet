@@ -149,10 +149,14 @@ class Client
 	/**
 	 * Verify an Akismet API key.
 	 * @param string $api_key
+	 * @param string[] $params Optional parameters. In verify-key, the only useful parameter is "is_test",
+	 *                         which you should only pass when testing. To be honest, it's not even clear
+	 *                         from the documentation if that parameter is used in verify-key, but better
+	 *                         safe than sorry...
 	 * @throws Exception
 	 * @return \Gothick\AkismetClient\VerifyKeyResult
 	 */
-	public function verifyKey($api_key = null, $is_test = false)
+	public function verifyKey($api_key = null, $params = array())
 	{
 		$key_to_verify = empty($api_key) ? $this->api_key : $api_key;
 
@@ -163,14 +167,13 @@ class Client
 
 		try
 		{
-			$params = [
-					"key" => $key_to_verify,
-					"blog" => $this->blog
-			];
-			if ($is_test)
-			{
-				$params[ 'is_test' ] = "1";
-			}
+			$params = array_merge(
+					$params,
+					[
+						"key" => $key_to_verify,
+						"blog" => $this->blog
+					]
+			);
 			$response = $this->callApiMethod(self::VERB_VERIFY_KEY, $params);
 		} catch (\Exception $e)
 		{
