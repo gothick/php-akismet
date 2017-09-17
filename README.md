@@ -5,12 +5,14 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/gothick/php-akismet/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/gothick/php-akismet/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/gothick/php-akismet/badges/build.png?b=master)](https://scrutinizer-ci.com/g/gothick/php-akismet/build-status/master)
 
-A simple PHP Akismet client. PSR-4 compatible; Composer-friendly;uses Guzzle as its http
+A simple PHP Akismet client. PSR-4 compatible; Composer-friendly; uses Guzzle as its http
 client; exposes all Akismet methods.
 
 # Simple Usage
 
 ## Spam checking
+
+Uses Akismet's `comment-check` API method:
 
 ```php
     $client = new \Gothick\AkismetClient\Client(
@@ -70,14 +72,14 @@ client; exposes all Akismet methods.
 
     // $result will be of type \Gothick\AkismetClient\Result\VerifyKeyResult
     $result = $client->verifyKey();
-	$api_key_is_valid = $result->isValid(); // Boolean
+    $api_key_is_valid = $result->isValid(); // Boolean
     
     // Can also check pro tip and debug help as above.
 ```
 
 ## Submitting ham and spam
 
-This client also exposes Akismet's submit-spam and submit-ham methods. Use them as
+This client also exposes Akismet's `submit-spam` and `submit-ham` methods. Use them as
 with commentCheck above, passing exactly the same parameters. See the Akismet API
 documentation for more details.
 
