@@ -5,8 +5,12 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/gothick/php-akismet/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/gothick/php-akismet/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/gothick/php-akismet/badges/build.png?b=master)](https://scrutinizer-ci.com/g/gothick/php-akismet/build-status/master)
 
-A simple PHP Akismet client. PSR-4 autoloading; Composer-friendly; uses Guzzle as its http
-client; exposes all Akismet methods.
+A simple PHP Akismet client. 
+
+* PSR-4 autoloading
+* Composer-friendly
+* Uses Guzzle as its http client
+* Exposes all Akismet methods and return values
 
 # Simple Usage
 
@@ -106,6 +110,11 @@ parameter:
         "YOUR KEY HERE",        // Your Akismet API key
         $guzzle_client 
     );
+
+# Error handling
+
+The client should either Just Work or throw `\Gothick\AkismetClient\AkismetException`,
+which is an entirely trivial extension of the PHP `\Exception` base class.
 
 # Tests
 
