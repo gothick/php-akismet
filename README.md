@@ -5,7 +5,7 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/gothick/php-akismet/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/gothick/php-akismet/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/gothick/php-akismet/badges/build.png?b=master)](https://scrutinizer-ci.com/g/gothick/php-akismet/build-status/master)
 
-A simple PHP Akismet client. PSR-4 compatible; Composer-friendly; uses Guzzle as its http
+A simple PHP Akismet client. PSR-4 autoloading; Composer-friendly; uses Guzzle as its http
 client; exposes all Akismet methods.
 
 # Simple Usage
