@@ -22,7 +22,7 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
-		$request_vars = \GuzzleHttp\Psr7\parse_query($request->getBody(), true);
+		$request_vars = \GuzzleHttp\Psr7\Query::parse($request->getBody()->getContents());
 		$this->assertEquals($test_key, $request_vars['key'], 'Client did not send correct key');
 		$this->assertEquals($test_blog_url, $request_vars['blog'], 'Client did not send correct blog');
 	}
@@ -56,7 +56,7 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
-		$request_vars = \GuzzleHttp\Psr7\parse_query($request->getBody(), true);
+		$request_vars = \GuzzleHttp\Psr7\Query::parse($request->getBody()->getContents());
 		$this->assertEquals($arbitrary_test_key, $request_vars['key'], 'Client did not send correct key');
 		$this->assertEquals($test_blog_url, $request_vars['blog'], 'Client did not send correct blog');
 	}
@@ -77,7 +77,7 @@ final class VerifyKeyRequestTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
-		$request_vars = \GuzzleHttp\Psr7\parse_query($request->getBody(), true);
+		$request_vars = \GuzzleHttp\Psr7\Query::parse($request->getBody()->getContents());
 		$this->assertEquals($test_key, $request_vars['key'], 'Client did not send correct key');
 		$this->assertEquals($test_blog_url, $request_vars['blog'], 'Client did not send correct blog');
 	}

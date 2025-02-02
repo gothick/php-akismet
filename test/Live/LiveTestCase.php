@@ -2,7 +2,7 @@
 
 namespace Gothick\AkismetClient\Test\Live;
 
-abstract class LiveTest extends \Gothick\AkismetClient\Test\TestBase
+abstract class LiveTestCase extends \Gothick\AkismetClient\Test\TestBase
 {
 	/**
 	 * Our "Live" tests really use the live Akismet API server (there is no test server.) These
@@ -15,7 +15,7 @@ abstract class LiveTest extends \Gothick\AkismetClient\Test\TestBase
 	 * {@inheritDoc}
 	 * @see \PHPUnit\Framework\TestCase::setUp()
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		global $AKISMET_API_KEY;
 		if (empty($AKISMET_API_KEY))

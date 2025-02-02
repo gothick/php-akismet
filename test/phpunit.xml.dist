@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<phpunit bootstrap="./bootstrap.php" colors="true">
+<phpunit bootstrap="./bootstrap.php" colors="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnPhpunitDeprecations="true"
+>
   <testsuites>
     <testsuite name="request-tests">
       <directory suffix="Test.php">./Request</directory>
@@ -11,14 +17,20 @@
       <directory suffix="Test.php">./Live</directory>
     </testsuite>
   </testsuites>
-  <filter>
-    <whitelist processUncoveredFilesFromWhitelist="true">
+  <source>
+    <include>
       <directory suffix=".php">./../src</directory>
-    </whitelist>
-  </filter>
+    </include>
+  </source>
+  <coverage includeUncoveredFiles="true"
+            ignoreDeprecatedCodeUnits="true"
+            disableCodeCoverageIgnore="true">
+    <report>
+      <clover outputFile="./../tmp/coverage-clover.xml"/>
+      <html outputDirectory="./../tmp/report" lowUpperBound="35" highLowerBound="70"/>
+    </report>
+  </coverage>
   <logging>
-    <log type="coverage-html" target="./../tmp/report" lowUpperBound="35" highLowerBound="70"/>
-    <log type="coverage-clover" target="./../tmp/coverage-clover.xml"/>
-    <log type="testdox-html" target="./../tmp/testdox.html"/>
+    <testdoxHtml outputFile="./../tmp/testdox.html"/>
   </logging>
 </phpunit>

@@ -40,3 +40,7 @@ Temporary Items
 
 ## Test report output, etc.
 /tmp
+
+# PHPUnit
+/.phpunit.cache
+.phpunit.result.cache
