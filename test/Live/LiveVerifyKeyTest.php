@@ -4,7 +4,7 @@ namespace Gothick\AkismetClient\Test\Live;
 
 use \Gothick\AkismetClient\Client;
 
-class LiveVerifyKeyTest extends LiveTest
+class LiveVerifyKeyTest extends LiveTestCase
 {
 	public function testVerifyInvalidKey()
 	{

@@ -5,7 +5,7 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/gothick/php-akismet/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/gothick/php-akismet/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/gothick/php-akismet/badges/build.png?b=master)](https://scrutinizer-ci.com/g/gothick/php-akismet/build-status/master)
 
-A simple PHP Akismet client. 
+A simple PHP Akismet client.
 
 * PSR-4 autoloading
 * Composer-friendly
@@ -25,24 +25,24 @@ Uses Akismet's `comment-check` API method:
         "1.2.3",                // Your website or app's software version (Used in the User-Agent: header when talking to Akismet)
         "YOUR KEY HERE"         // Your Akismet API key
     );
-    
+
     // See https://akismet.com/development/api/#comment-check for all available parameters
     $params = [
         "user_ip" => "203.0.113.4", // IP address of person posting the comment
-        "user_agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8", // User-Agent header of the commenter 
+        "user_agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8", // User-Agent header of the commenter
         "comment_type" => "forum-post",
         "comment_author" => "Spammy McSpamface",
         "comment_content" => "I'm an evil spammy message"
     ]
-        
+
     // $result will be of type \Gothick\AkismetClient\Result\CommentCheckResult.php
     // Akismet really wants to see your $_SERVER variables. "This data is highly useful to
     // Akismet. How the submitted content interacts with the server can be very telling,
     // so please include as much of it as possible." But obviously, if you're worried,
     // you could filter anything senstive out and send in a pared-down array instead.
     $result = $client->commentCheck($params, $_SERVER);
-    
-    $is_spam = $result->isSpam(); // Boolean 
+
+    $is_spam = $result->isSpam(); // Boolean
 ```
 
 ## More advanced usage
@@ -57,7 +57,7 @@ Uses Akismet's `comment-check` API method:
     if ($result->hasProTip()) {
         $pro_tip = $result->getProTip();
     }
-    
+
     // Get the X-akismet-debug-help header, if present
     if ($result->hasDebugHelp()) {
         $debug_help = $result->getDebugHelp();
@@ -77,7 +77,7 @@ Uses Akismet's `comment-check` API method:
     // $result will be of type \Gothick\AkismetClient\Result\VerifyKeyResult
     $result = $client->verifyKey();
     $api_key_is_valid = $result->isValid(); // Boolean
-    
+
     // Can also check pro tip and debug help as above.
 ```
 
@@ -108,7 +108,7 @@ parameter:
         "Example Forum",        // Your website or app's name (Used in the User-Agent: header when talking to Akismet)
         "1.2.3",                // Your website or app's software version (Used in the User-Agent: header when talking to Akismet)
         "YOUR KEY HERE",        // Your Akismet API key
-        $guzzle_client 
+        $guzzle_client
     );
 
 # Error handling
@@ -119,10 +119,10 @@ which is an entirely trivial extension of the PHP `\Exception` base class.
 # Tests
 
 A unit test suite is provided; install the package using Composer with dev requirements,
-then (you'll need PHP 7.0+):
+then (you'll need PHP 8.1+ and PHPUnit 10.5+):
 
 ```sh
-    php vendor/bin/phpunit -c test/phpunit.xml.dist 
+    php vendor/bin/phpunit -c test/phpunit.xml.dist
 ```
 
 You'll notice some tests are skipped. The majority of the tests use mock Guzzle responses,
@@ -132,7 +132,7 @@ variable:
 
 ```sh
     export AKISMET_API_KEY="YOUR API KEY"
-    php vendor/bin/phpunit -c test/phpunit.xml.dist 
+    php vendor/bin/phpunit -c test/phpunit.xml.dist
 ```
 
 

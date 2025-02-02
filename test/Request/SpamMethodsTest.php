@@ -4,7 +4,7 @@ namespace Gothick\AkismetClient\Test\Request;
 
 final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 {
-	public function normalResponseProvider()
+	public static function normalResponseProvider()
 	{
 		return [
 				['commentCheck', self::commentCheckHamResponse(), \Gothick\AkismetClient\Result\CommentCheckResult::class, 'comment-check'],
@@ -36,7 +36,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
-		$request_vars = \GuzzleHttp\Psr7\parse_query($request->getBody(), true);
+		$request_vars = \GuzzleHttp\Psr7\Query::parse($request->getBody()->getContents());
 
 		$this->assertArrayHasKey('blog', $request_vars);
 		$this->assertArrayHasKey('user_ip', $request_vars);
@@ -71,7 +71,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
-		$request_vars = \GuzzleHttp\Psr7\parse_query($request->getBody(), true);
+		$request_vars = \GuzzleHttp\Psr7\Query::parse($request->getBody()->getContents());
 
 		$this->assertArrayHasKey('special_chars', $request_vars);
 		$this->assertArrayHasKey('random', $request_vars);
@@ -108,7 +108,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 
 		$transaction = $history_container[0];
 		$request = $transaction['request'];
-		$request_vars = \GuzzleHttp\Psr7\parse_query($request->getBody(), true);
+		$request_vars = \GuzzleHttp\Psr7\Query::parse($request->getBody()->getContents());
 
 		$this->assertArrayHasKey('CLASHING_NAME', $request_vars);
 		$this->assertArrayHasKey('SERVER_NAME', $request_vars);
@@ -118,7 +118,7 @@ final class SpamMethodsTest extends \Gothick\AkismetClient\Test\TestBase
 		$this->assertEquals($request_vars['SERVER_SOFTWARE'], 'Apache/2.4.18 (Ubuntu)', 'Client did not send correct SERVER_SOFTWARE');
 	}
 
-	public function spamMethodsProvider()
+	public static function spamMethodsProvider()
 	{
 		return [
 				['commentCheck'],

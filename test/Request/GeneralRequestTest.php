@@ -19,7 +19,7 @@ final class GeneralRequestTest extends \Gothick\AkismetClient\Test\TestBase
 		$user_agent = $request->getHeader('User-Agent');
 		$this->assertCount(1, $user_agent, 'Multiple User-Agents present');
 
-		$this->assertRegExp('~^@@@APPNAME@@@/###APPVERSION### \| Gothick\\\\AkismetClient/[0-9]+\.[0-9]+$~', $user_agent[0], 'User Agent in wrong format');
+		$this->assertMatchesRegularExpression('~^@@@APPNAME@@@/###APPVERSION### \| Gothick\\\\AkismetClient/[0-9]+\.[0-9]+$~', $user_agent[0], 'User Agent in wrong format');
 	}
 	public function testFormEncoding()
 	{

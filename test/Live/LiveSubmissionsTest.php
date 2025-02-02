@@ -4,7 +4,7 @@ namespace Gothick\AkismetClient\Test\Live;
 
 use \Gothick\AkismetClient\Client;
 
-class LiveSubmissionsTest extends LiveTest
+class LiveSubmissionsTest extends LiveTestCase
 {
 	public function testSubmitSpam()
 	{
