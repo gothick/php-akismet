@@ -6,7 +6,7 @@ build:
     tests:
         override:
             -
-                command: 'vendor/bin/phpunit --bootstrap test/bootstrap.php -c test/phpunit.xml.dist'
+                command: 'XDEBUG_MODE=coverage vendor/bin/phpunit --bootstrap test/bootstrap.php -c test/phpunit.xml.dist'
                 coverage:
                     file: 'tmp/coverage-clover.xml'
                     format: 'clover'
