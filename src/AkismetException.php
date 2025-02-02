@@ -10,7 +10,7 @@ class AkismetException extends \Exception
 {
 	// TODO: If this is all we end up doing, do we need this class at all? Might help
 	// to distinguish our known errors from more serious errors in testing, I suppose...
-	public function __construct($message, $code = 0, \Exception $previous = null)
+	public function __construct($message, $code = 0, ?\Exception $previous = null)
 	{
 		parent::__construct('Gothick\AkismetClient: ' . $message, $code,
 				$previous);
