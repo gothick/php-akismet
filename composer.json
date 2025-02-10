@@ -2,7 +2,6 @@
 	"name": "gothick/php-akismet",
 	"description": "Akismet PHP Client",
 	"homepage": "https://github.com/gothick/phpbb-akismet",
-	"version": "2.0.0",
 	"time": "2025-02-02",
 	"license": "Apache-2.0",
 	"authors": [
