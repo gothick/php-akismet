@@ -29,5 +29,8 @@
 		"psr-4": {
 			"Gothick\\AkismetClient\\Test\\": "test/"
 		}
+	},
+	"scripts": {
+		"test": "vendor/bin/phpunit -c test/phpunit.xml.dist"
 	}
 }
