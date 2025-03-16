@@ -11,6 +11,7 @@ A simple PHP Akismet client.
 * Composer-friendly
 * Uses Guzzle as its http client
 * Exposes all Akismet methods and return values
+* Available [on Packagist](https://packagist.org/packages/gothick/php-akismet)
 
 # Simple Usage
 
